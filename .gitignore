@@ -2,4 +2,4 @@
 /.streamlit/secrets.toml
 
 # ignore .DS Store files
-*.DS_STORE
+.DS_STORE
