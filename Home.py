@@ -36,8 +36,8 @@ with col3:
     linkedin_count = st.slider("Number of LinkedIn posts", min_value=100, max_value=1000, step=10, value=0) 
 
 keywords = st.multiselect(
-    'Keywords',
-    ['Sustainability', 'Marketing', 'Carbon', 'Religion', 'Engineering', 'Data Science', 'Holin'])
+    'Hashtags',
+    ['#sustainability', '#mrketing', '#carbon', '#religion', '#engineering', '#datascience', '#holin'])
 
 since_date = since_date[:7] + '--' + since_date[8:]
 
@@ -127,3 +127,4 @@ if submit:
 
         st.pyplot(fig)
 
+st.write("Secret Email:", st.secrets["EAI_USERNAME"])
