@@ -1,8 +1,10 @@
 from operator import ge, index
 from os import link
+import linkedin_api
 import streamlit as st
 import pandas as pd
 import pandas as pd
+from traitlets import default
 import tweepy
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,25 +13,15 @@ import seaborn as sns
 import linkedinAPI 
 import expertaiAPI
 
-DATE_COLUMN = 'date/time'
-DATA_URL = ('https://s3-us-west-2.amazonaws.com/'
-            'streamlit-demo-data/uber-raw-data-sep14.csv.gz')
-
-@st.cache
-def load_data(nrows):
-    data = pd.read_csv(DATA_URL, nrows=nrows)
-    lowercase = lambda x: str(x).lower()
-    data.rename(lowercase, axis='columns', inplace=True)
-    data[DATE_COLUMN] = pd.to_datetime(data[DATE_COLUMN])
-    return data
-
 st.title("ESG Glassdoor")
 
 st.write("Raising transparency on companies' attitude towards ESG and compare their position with public perception.")
 
 col1, col2, col3 = st.columns(3)
 with col1:
-    company_name = st.text_input("Company name", value="Dell Technologies")
+    #company_name = st.text_input("Company name", value="Walmart")
+    company_name = st.selectbox("Company", (list(linkedinAPI.getPosts().company.unique())), index=3)
+
 with col2:
     since_date = st.text_input("Get posts since", value="YYYY-MM-DD")
 with col3:
@@ -50,16 +42,15 @@ with col3:
     submit = st.button('Submit')
 
 if submit:
-
+   
     # Scrape LinkedIn
-    # Top linkedin posts
-    raw_posts, raw_comments = linkedinAPI.getPosts(company_name)
-    # Company posts
-    raw_company_posts, raw_company_comments = linkedinAPI.getCompanyPosts(company_name)
+    raw_posts = linkedinAPI.getPosts()
+    raw_comments = linkedinAPI.getComments()
 
     # Do ESG & Sentiment Analysis
     posts, comments = expertaiAPI.magic(raw_posts, raw_comments)
-    company_posts, company_comments = expertaiAPI.magic(raw_company_posts, raw_company_comments)
+    company_posts = posts[posts.company == company_name.lower()]
+    company_comments = comments[comments.company == company_name.lower()]
 
     st.write("---")
     
@@ -69,7 +60,7 @@ if submit:
         st.markdown(f"<h4 style='text-align: center;'>{company_name}</h4>", unsafe_allow_html=True)
     with col2:
         st.markdown(f"<h4 style='text-align: center;'>LinkedIn Top 10</h4>", unsafe_allow_html=True)
-
+    # Scores
     col3, col4, col5, col6 = st.columns(4)
     style = "style='text-align: center; background: #F0F8FF; padding-top: 25px; padding-bottom: 25px;'"
     with col3:
@@ -84,15 +75,30 @@ if submit:
     with col6:
         st.markdown(f"<h3 {style}>{round(posts.Sentiment.mean(), 2)}</h3", unsafe_allow_html=True)
         st.markdown(f"<p style='text-align: center;'>Sentiment Score</p>", unsafe_allow_html=True)
+    # posts and comments
+    col3, col4, col5, col6 = st.columns(4)
+    style = "style='text-align: center; background: #F0F8FF; padding-top: 25px; padding-bottom: 25px;'"
+    with col3:
+        st.markdown(f"<h3 {style}>{len(company_posts.post_urn)}</h3", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align: center;'>Posts</p>", unsafe_allow_html=True)
+    with col4:
+        st.markdown(f"<h3 {style}>{round(company_posts.numComments.mean())}</h3", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align: center;'>Comments (Avg)</p>", unsafe_allow_html=True)
+    with col5:
+        st.markdown(f"<h3 {style}>{len(posts.post_urn)}</h3", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align: center;'>Posts</p>", unsafe_allow_html=True)
+    with col6:
+        st.markdown(f"<h3 {style}>{round(posts.numComments.mean())}</h3", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align: center;'>Comments (Avg)</p>", unsafe_allow_html=True)
 
     st.write("---")
 
     # Show Raw Posts
     if show_posts:
         st.write("Raw Posts Data")
-        st.write(raw_company_posts)
+        st.write(raw_posts)
 
-    # Show Analysed Posts
+    # Show Analysed Posts  
     if show_analysis:
         st.write("Analysed Posts Data")
         st.write(company_posts)
@@ -102,11 +108,19 @@ if submit:
     with col1:
         st.markdown(f"<h4 style='text-align: center;'>ESG x Sentiment</h4>", unsafe_allow_html=True)
         fig, ax = plt.subplots()
-        ax.scatter(x=company_posts["Sentiment"], y=company_posts["ESG"])
+        ax.scatter(x=company_posts["Sentiment"], y=company_posts["ESG"], cmap='veridis')
+        try:
+            z = np.polyfit(company_posts["Sentiment"], company_posts["ESG"], 1)
+            p = np.poly1d(z)
+            ax.plot(company_posts["Sentiment"], p(company_posts["Sentiment"]),"r--")
+        except:
+            pass
         sns.despine(left = True)
         plt.ylabel('ESG Score')
         plt.xlabel('Sentiment Score')
         st.pyplot(fig)
+
+
 
     with col2:
         st.markdown(f"<h4 style='text-align: center;'>ESG Scores</h4>", unsafe_allow_html=True)
@@ -126,5 +140,3 @@ if submit:
         sns.despine(left = True)
 
         st.pyplot(fig)
-
-st.write("Secret Email:", st.secrets["EAI_USERNAME"])
