@@ -1,0 +1,5 @@
+# ignore secrets
+/.streamlit/secrets.toml
+
+# ignore .DS Store files
+*.DS_STORE
