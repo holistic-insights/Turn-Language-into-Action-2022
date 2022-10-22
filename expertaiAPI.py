@@ -1,22 +1,58 @@
-from curses import raw
-from pickletools import read_bytes1
+import os
 import streamlit as st
-import pandas as pd
-import numpy as np
+from expertai.nlapi.cloud.client import ExpertAiClient
 
-def magic(raw_posts, raw_comments):
 
-    # Run esg
-    cols = ['ESG', 'Environment', 'Social', 'Governance', 'Biodiversity', 'Gender_Equality', 'Strategy']
+class ExpertAPI(object):
 
-    posts = raw_posts.copy()
-    for col in cols:
-        posts[col] = np.random.randint(1, 100, len(posts.company))
+    def __init__(self):
+        super().__init__()
+        os.environ['EAI_USERNAME'] = st.secrets['EXPERTAI_USERNAME']
+        os.environ['EAI_PASSWORD'] = st.secrets['EXPERTAI_PASSWORD']
 
-    comments = raw_comments.copy()
-    comments['Sentiment'] = np.random.randint(1, 100, len(comments.company))
+        # Instantiate client to use the Natural Language API
+        self.client = ExpertAiClient()
 
-    # Post sentiment as average of comment sentiment
-    posts['Sentiment'] = posts['post_urn'].apply(lambda x: comments[comments.post_urn == x]['Sentiment'].mean())
+        self.language = 'en'
+        self.detector = 'esg-sentiment'
 
-    return posts, comments
+    def esg_detection(self, posts):
+
+        posts.reset_index(drop=True, inplace=True)
+
+        for i, text in enumerate(posts.text):
+
+            try:
+                output = self.client.detection(
+                    body={'document': {'text': text}},
+                    params={'detector': self.detector, 'language': self.language}
+                )
+
+                for category in output.categories:
+                    posts.loc[i, category.label] = category.score
+
+            except:
+                print('ESG Detection Failed')
+                continue
+
+        return posts
+
+    def sentiment_analysis(self, comments):
+
+        comments.reset_index(drop=True, inplace=True)
+
+        for i, text in enumerate(comments.text):
+
+            try:
+                output = self.client.specific_resource_analysis(
+                    body={'document': {'text': text}},
+                    params={'resource': 'sentiment', 'language': self.language}
+                )
+                # overall sentiment ranges from -100 (extremely negative) to 100 (extremely positive)
+                comments.loc[i, 'sentiment'] = output.sentiment.overall
+                
+            except:
+                print('Sentiment Analysis Failed')
+                continue
+
+        return comments

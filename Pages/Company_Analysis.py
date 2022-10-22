@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 # import API scripts
 import linkedinAPI 
-import expertaiAPI
+from expertaiAPI import ExpertAPI
 
 
 st.title("ESG Glassdoor")
@@ -28,7 +28,7 @@ with col3:
 
 keywords = st.multiselect(
     'Hashtags',
-    ['#sustainability', '#mrketing', '#carbon', '#religion', '#engineering', '#datascience', '#holin'])
+    ['#sustainability', '#marketing', '#carbon', '#religion', '#engineering', '#datascience', '#holin'])
 
 since_date = since_date[:7] + '--' + since_date[8:]
 
@@ -47,13 +47,17 @@ if submit:
     raw_comments = linkedinAPI.getComments()
 
     # Do ESG & Sentiment Analysis
-    posts, comments = expertaiAPI.magic(raw_posts, raw_comments)
+    expert_api = ExpertAPI()
+    posts = expert_api.esg_detection(raw_posts)
+    comments = expert_api.sentiment_analysis(raw_comments)
+    posts['Sentiment'] = posts['urn'].apply(lambda x: comments[comments.post_urn == x]['sentiment'].mean())
+
     company_posts = posts[posts.company == company_name.lower()]
     company_comments = comments[comments.company == company_name.lower()]
 
     st.write("---")
     
-    # Summary Estatistics
+    # Summary Statistics
     col1, col2 = st.columns(2)
     with col1:
         st.markdown(f"<h4 style='text-align: center;'>{company_name}</h4>", unsafe_allow_html=True)
@@ -118,8 +122,6 @@ if submit:
         plt.ylabel('ESG Score')
         plt.xlabel('Sentiment Score')
         st.pyplot(fig)
-
-
 
     with col2:
         st.markdown(f"<h4 style='text-align: center;'>ESG Scores</h4>", unsafe_allow_html=True)
