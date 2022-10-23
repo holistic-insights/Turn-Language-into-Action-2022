@@ -1,63 +1,65 @@
-import linkedinAPI
 import streamlit as st
-from streamlit.components.v1 import html
+import pandas as pd
+from streamlit_tags import st_tags
+import plotly.graph_objects as go
 
 
 @st.cache
-def nav_page(page_name, timeout_secs=3):
-    nav_script = """
-        <script type="text/javascript">
-            function attempt_nav_page(page_name, start_time, timeout_secs) {
-                var links = window.parent.document.getElementsByTagName("a");
-                for (var i = 0; i < links.length; i++) {
-                    if (links[i].href.toLowerCase().endsWith("/" + page_name.toLowerCase())) {
-                        links[i].click();
-                        return;
-                    }
-                }
-                var elapsed = new Date() - start_time;
-                if (elapsed < timeout_secs * 1000) {
-                    setTimeout(attempt_nav_page, 100, page_name, start_time, timeout_secs);
-                } else {
-                    alert("Unable to navigate to page '" + page_name + "' after " + timeout_secs + " second(s).");
-                }
-            }
-            window.addEventListener("load", function() {
-                attempt_nav_page("%s", new Date(), %d);
-            });
-        </script>
-    """ % (page_name, timeout_secs)
-    html(nav_script)
+def get_data():
 
+    df = pd.DataFrame()
+
+    return df
+
+@st.cache
+def call_models():
+
+    df = pd.DataFrame()
+
+    return df
+
+@st.cache
+def analytics():
+
+    df = pd.DataFrame({'post': ['overall', '#1', '#2', '#3'], 'ESG': ['Environment', 'Social', 'Environment', 'Environment'], 'ESG sentiment score': [9.7, 7, 2, 20], 'Number of comments': [230, 40, 90, 100], 'Comments sentiment': [5.7, -5, 20, 2]})
+
+    return df
 
 st.title("ESG Glassdoor")
-
 st.write("Raising transparency on companies' attitude towards ESG and compare their position with public perception.")
 
+data = get_data()
+data = call_models()
+data = analytics()
 
-col1, col2, col3 = st.columns(3)
-with col1:
-    company_name = st.selectbox("Company", (list(linkedinAPI.getPosts().company.unique())), index=3)
-with col2:
-    since_date = st.text_input("Get posts since", value="YYYY-MM-DD")
-with col3:
-    linkedin_count = st.slider("Max LinkedIn posts", min_value=100, max_value=1000, step=10, value=0) 
+tab1, tab2 = st.tabs(["Company Scoring", "New Post Scoring"])
 
-keywords = st.multiselect(
-    'Hashtags',
-    ['#sustainability', '#marketing', '#carbon', '#religion', '#engineering', '#datascience'])
+with tab1:
+    st.subheader("Company Scoring")
 
-since_date = since_date[:7] + '--' + since_date[8:]
+    keywords = st_tags(label='Company', maxtags=2, suggestions=['Tesla', 'Amazon', 'Google'], text='Press enter to add more')
 
-col1, col2, col3, col4 = st.columns(4)
-with col2:
-    company_analysis = st.button('Analyse this Company')
-with col3:
-    post_analysis = st.button('Try out your own Posts')
+with tab2:
+    
+    st.subheader("New Post Scoring")
 
 
-if company_analysis:
-    nav_page("Company_Analysis")
-if post_analysis:
-    nav_page("Post_Analysis")
- 
+    st.write("Write your post")
+    post_text = st.text_area("Write your post", label_visibility='collapsed')
+
+    submit = st.button('Submit')
+
+    if submit:
+        cat = 'Environment'
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            exp1 = st.expander("fff")
+            exp1.markdown(f'<h4>ESG Category</h4>', unsafe_allow_html=True)
+            exp1.markdown(f'<h2 style="color:#ff4b4b">{cat}</h2>', unsafe_allow_html=True)
+        with col2:
+            exp2 = st.expander("eee")
+            fig = go.Figure(go.Indicator(mode = "gauge+number", value = 13, domain = {'x': [0, 1], 'y': [0, 1]}, title = {'text': "ESG Sentiment"}))
+            exp2.plotly_chart(fig, use_container_width=True)
+
