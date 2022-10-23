@@ -1,15 +1,7 @@
-from operator import ge, index
-from os import link
+import linkedinAPI
 import streamlit as st
-import pandas as pd
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-# import API scripts
-import linkedinAPI 
-import expertaiAPI
 from streamlit.components.v1 import html
+
 
 @st.cache
 def nav_page(page_name, timeout_secs=3):
@@ -23,8 +15,8 @@ def nav_page(page_name, timeout_secs=3):
                         return;
                     }
                 }
-                var elasped = new Date() - start_time;
-                if (elasped < timeout_secs * 1000) {
+                var elapsed = new Date() - start_time;
+                if (elapsed < timeout_secs * 1000) {
                     setTimeout(attempt_nav_page, 100, page_name, start_time, timeout_secs);
                 } else {
                     alert("Unable to navigate to page '" + page_name + "' after " + timeout_secs + " second(s).");
@@ -36,6 +28,7 @@ def nav_page(page_name, timeout_secs=3):
         </script>
     """ % (page_name, timeout_secs)
     html(nav_script)
+
 
 st.title("ESG Glassdoor")
 
@@ -52,7 +45,7 @@ with col3:
 
 keywords = st.multiselect(
     'Hashtags',
-    ['#sustainability', '#mrketing', '#carbon', '#religion', '#engineering', '#datascience', '#holin'])
+    ['#sustainability', '#marketing', '#carbon', '#religion', '#engineering', '#datascience'])
 
 since_date = since_date[:7] + '--' + since_date[8:]
 
