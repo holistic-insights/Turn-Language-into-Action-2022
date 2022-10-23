@@ -7,3 +7,4 @@ matplotlib==3.5.2
 streamlit==1.13.0
 linkedin-api~=2.0.0a
 expertai-nlapi==2.4.1
+streamlit_tags
