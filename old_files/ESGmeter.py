@@ -72,6 +72,22 @@ with tab1:
                     score = 0
                 cat_scores[col] = score
 
+            cat_counts_df = pd.DataFrame({'Category': list(cat_counts.keys()), 'Counts': list(cat_counts.values())})
+            cat_scores_df = pd.DataFrame({'Category': list(cat_scores.keys()), 'Scores Sum': list(cat_scores.values())})
+
+            subcat_counts = dict()
+            subcat_scores = dict()
+
+            for col in subcategories:
+                subcat_counts[col] = data[col].value_counts(dropna=True).sum()
+                score = data[col].dropna().mean()
+                if pd.isna(score):
+                    score = 0
+                subcat_scores[col] = score
+
+            subcat_counts_df = pd.DataFrame({'Category': list(subcat_counts.keys()), 'Counts': list(subcat_counts.values())})
+            subcat_scores_df = pd.DataFrame({'Category': list(subcat_scores.keys()), 'Scores Sum': list(subcat_scores.values())})
+
             avg_likes = data['numLikes'].mean()
             avg_comments = data['numComments'].mean()
 
@@ -87,8 +103,9 @@ with tab1:
 
             st.plotly_chart(fig, use_container_width=True)
 
-            cat_counts_df = pd.DataFrame({'Category': list(cat_counts.keys()), 'Counts': list(cat_counts.values())})
-            cat_scores_df = pd.DataFrame({'Category': list(cat_scores.keys()), 'Scores Sum': list(cat_scores.values())})
+            st.markdown(f'<h4>ESG analysis</h4>', unsafe_allow_html=True)
+
+            only_main = st.checkbox('Only show main categories', value=True)
 
             col1, col2 = st.columns(2)
 
@@ -98,6 +115,18 @@ with tab1:
             with col2:
                 st.markdown(f'<h5>ESG categories scores</h5>', unsafe_allow_html=True)
                 st.bar_chart(data=cat_scores_df, x='Category', y='Scores Sum')
+
+            if not only_main:
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.markdown(f'<h5>ESG subcategories counts</h5>', unsafe_allow_html=True)
+                    st.bar_chart(data=subcat_counts_df, x='Category', y='Counts')
+                with col2:
+                    st.markdown(f'<h5>ESG subcategories scores</h5>', unsafe_allow_html=True)
+                    st.bar_chart(data=subcat_scores_df, x='Category', y='Scores Sum')
+
 
         with tab21:
             pass
