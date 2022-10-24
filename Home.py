@@ -17,7 +17,7 @@ with tab1:
 
     st.subheader("Company Scoring")
 
-    all_data = pd.read_csv('../Data/posts_esg_final.csv')
+    all_data = pd.read_csv('Data/posts_esg_final.csv')
     list_of_companies = tuple(all_data['company'].unique().tolist())
 
     option = st.selectbox('Search a company', list_of_companies)
