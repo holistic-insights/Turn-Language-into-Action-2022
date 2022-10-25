@@ -8,8 +8,33 @@ import plotly.express as px
 categories = ['Environment', 'Social', 'Governance']
 subcategories = ['Climate Impact', 'Biodiversity and Environmental Footprint', 'Waste and Emissions Management ', 'Human Capital ', 'Environmental Opportunities ', 'Waste and Emission Management', 'Diversity and Inclusion', 'Workplace and Product Safety', 'Environmental Crime', 'Legal Compliance', 'Business Ethics and Transparency', 'Product Stewardship']
 
+@st.cache
+def get_data():
+
+    df = pd.DataFrame()
+
+    return df
+
+@st.cache
+def call_models():
+
+    df = pd.DataFrame()
+
+    return df
+
+@st.cache
+def analytics():
+
+    df = pd.DataFrame({'post': ['overall', '#1', '#2', '#3'], 'ESG': ['Environment', 'Social', 'Environment', 'Environment'], 'ESG sentiment score': [9.7, 7, 2, 20], 'Number of comments': [230, 40, 90, 100], 'Comments sentiment': [5.7, -5, 20, 2]})
+
+    return df
+
 st.title("ESG meter")
 st.write("Raising transparency on companies' attitude towards ESG and compare their position with public perception.")
+
+data = get_data()
+data = call_models()
+data = analytics()
 
 tab1, tab2 = st.tabs(["Company Scoring", "New Post Scoring"])
 
@@ -17,7 +42,7 @@ with tab1:
 
     st.subheader("Company Scoring")
 
-    all_data = pd.read_csv('Data/posts_esg_final.csv')
+    all_data = pd.read_csv('../Data/posts_esg_final.csv')
     list_of_companies = tuple(all_data['company'].unique().tolist())
 
     option = st.selectbox('Search a company', list_of_companies)
