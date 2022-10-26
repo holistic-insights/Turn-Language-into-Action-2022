@@ -262,3 +262,5 @@ with tab2:
         
         loaded_model = load_model('model_autokeras', custom_objects=ak.CUSTOM_OBJECTS)
         y_pred = loaded_model.predict(tf.expand_dims(x, -1))
+
+        st.write(y_pred)
