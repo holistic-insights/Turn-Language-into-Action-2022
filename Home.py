@@ -231,30 +231,32 @@ with tab2:
 
     if submit:
 
-        exp = ExpertAPI()
-        results_df = exp.esg_detection(pd.DataFrame({'text': [post_text]}))
+        if False == True:
 
-        all_cat = categories + subcategories + ['Negative', 'Positive']
+            exp = ExpertAPI()
+            results_df = exp.esg_detection(pd.DataFrame({'text': [post_text]}))
 
-        for cat in [c for c in all_cat if c not in results_df.columns]:
-            results_df[cat] = 0
+            all_cat = categories + subcategories + ['Negative', 'Positive']
 
-        if results_df['Positive'].item() > 0:
-            post_esg_sentiment = results_df['Positive'].item()
-        else:
-            post_esg_sentiment = -results_df['Negative'].item()
+            for cat in [c for c in all_cat if c not in results_df.columns]:
+                results_df[cat] = 0
 
-        cats_df = results_df[categories].transpose().reset_index().rename(columns={'index': 'Category', 0: 'Score'})
-        subcats_df = results_df[subcategories].transpose().reset_index().rename(columns={'index': 'Category', 0: 'Score'})
+            if results_df['Positive'].item() > 0:
+                post_esg_sentiment = results_df['Positive'].item()
+            else:
+                post_esg_sentiment = -results_df['Negative'].item()
 
-        st.markdown(f'<h5>ESG main categories</h5>', unsafe_allow_html=True)
-        st.bar_chart(data=cats_df, x='Category', y='Score')
+            cats_df = results_df[categories].transpose().reset_index().rename(columns={'index': 'Category', 0: 'Score'})
+            subcats_df = results_df[subcategories].transpose().reset_index().rename(columns={'index': 'Category', 0: 'Score'})
 
-        st.markdown(f'<h5>ESG sub categories</h5>', unsafe_allow_html=True)
-        st.bar_chart(data=subcats_df, x='Category', y='Score')
+            st.markdown(f'<h5>ESG main categories</h5>', unsafe_allow_html=True)
+            st.bar_chart(data=cats_df, x='Category', y='Score')
 
-        fig = go.Figure(go.Indicator(mode = "gauge+number", value = post_esg_sentiment, domain = {'x': [0, 1], 'y': [0, 1]}, title = {'text': "ESG Sentiment"}))
-        st.plotly_chart(fig, use_container_width=True)
+            st.markdown(f'<h5>ESG sub categories</h5>', unsafe_allow_html=True)
+            st.bar_chart(data=subcats_df, x='Category', y='Score')
+
+            fig = go.Figure(go.Indicator(mode = "gauge+number", value = post_esg_sentiment, domain = {'x': [0, 1], 'y': [0, 1]}, title = {'text': "ESG Sentiment"}))
+            st.plotly_chart(fig, use_container_width=True)
 
         x = np.array([post_text])
         
