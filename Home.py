@@ -570,7 +570,7 @@ with tab2:
             else:
                 color = "#EF553B"
 
-            fig = go.Indicator(mode = "gauge+number", value = predicted_comments_sentiment.item(), gauge = {'bar': {'color': color}, 'axis': {'range': [-100, 100], 'visible': False}}, domain = {'x': [0, 1], 'y': [0, 1]}, title = {'text': "Predict Comments Sentiment"})   
+            fig = go.Indicator(mode = "gauge+number", value = predicted_comments_sentiment.item(), gauge = {'bar': {'color': color}, 'axis': {'range': [-100, 100], 'visible': False}}, domain = {'x': [0, 1], 'y': [0, 1]}, title = {'text': "Comments Sentiment Prediction"})   
             fig = dict(data=[fig], layout=layout)
             st.plotly_chart(fig, use_container_width=True)
         
