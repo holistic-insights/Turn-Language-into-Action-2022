@@ -3,7 +3,7 @@
 
 We developed a web application with the purpose of creating ways to improve the world using deep Natural Language Processing and Expert.ai's Natural Language API, as part of [Expert.ai's hackathon](https://expertai-nlapi-092022.devpost.com/).
 
-## Competition Category
+## Competion Category
 ESG (Environmental, Social, Governance)
 
 ## Application Name
@@ -45,22 +45,23 @@ Finally, we believe that these datasets can enable future research on NLP-relate
 #### ***1. Creating the Base Datasets***
 To select the companies, we created a subset of 165 from Fortune 1000 Companies list with social media information from [GitHub](https://gist.github.com/mbejda/45db05ea50e79bc42016). It was considered to be a meaningful subset, with some of the most important firms in the list of the 1000 largest American companies. 
 
-Then, we resorted to the [LinkedIn API](https://linkedin-api.readthedocs.io) to build our own social media datasets.  Posts and Comments' data was scrapped from these companies' page on LinkedIn.
+Then, we resorted to the [LinkedIn API](https://linkedin-api.readthedocs.io) to build our own social media datasets.  Posts and Comments' data were scrapped from these companies' pages on LinkedIn.
 
 #### ***2. Running ESG and Sentiment Analysis***
-Posts' and comments' text from the base dataset were analysed using Expert.ai's knowledge models, updating the datasets to include the ESG categorization and subcatogries scores (for posts) and the text sentiment (for comments).
+Posts' and comments' text from the base dataset were analysed using Expert.ai's knowledge models, updating the datasets to include the ESG categorization and subcategories scores (for posts) and the text sentiment (for comments).
 
 #### ***3. Building Visualizations***
-In order to provide deep and holistc insights, we focused on creating visualizations with *Matplotlib* and *Plotly* for ESG category counts, total subcategory scores and sentiment dispersion, allowing the user to easily compare values.
+In order to provide deep and holistic insights, we focused on creating visualizations with *Matplotlib* and *Plotly* for ESG category counts, total subcategory scores, and sentiment dispersion, allowing the user to easily compare values.
 
 #### ***4. Creating a Sentiment Predictor***
 
-Using Expert.ai's pretrained models to provide weak supervision, we trained a model to estimate the sentiment a given post will generate among people. First, we built a dataset consisting of raw LinkedIn posts and the predicted average sentiment score of their comments. Then, we fit a ***AutoKeras' TextRegressor*** using the latter as noisy labels. AutoKeras automatically searches for the best model and hyperparameters. 
+Using Expert.ai's pre-trained models to provide weak supervision, we trained a model to estimate the sentiment a given post will generate among people. First, we built a dataset consisting of raw LinkedIn posts and the predicted average sentiment score of their comments. Then, we fit a ***AutoKeras' TextRegressor*** using the latter as noisy labels. AutoKeras automatically searches for the best model and hyperparameters. 
 
 #### ***5. Constructing the Web App***
-By taking advantage of **Streamlit**'s open-source Python library to turn python scripts into shareable web apps, we built a single page app, with two tabs:
-1. *Company Scoring*, where users can review a single company's general post, ESG and sentiment performance, as well as compare it with a selection of companies;
+By taking advantage of **Streamlit**'s open-source Python library to turn python scripts into shareable web apps, we built a single-page app, with two tabs:
+1. *Company Scoring*, where users can review a single company's general post, ESG, and sentiment performance, as well as compare it with a selection of companies;
 2. *New Post Scoring*, where users can write a new post, and receive feedback on its ESG rating, and an average sentiment prediction that the post will receive from the audience.
+
 
 ## 💻 Product
 ### Definition
@@ -84,10 +85,10 @@ The following diagram, exemplifies SustainaMeter's activities:
 ### How does the app work?
 Users can input:
 - **Company name**, from the list of available (pre-scraped companies);
-- **Number of posts** to analyse, selected in order of the highest number of likes;
+- **Number of posts** to analyse, selected in order of highest number of likes;
 - **Comparison group** for comparing the selected company's performance with the top 5 companies sorted by no. of likes, comments, posts or their ESG score
 
-Users, will, then, be able to dive into individual analysis of the company and compare it with the average ratings of the top 5 companies selected.
+Users, will, then, be able to dive into individual analyis of the company and compare it with the average ratings of the top 5 companies selected.
 
 ![Screeshots of the App visualizations](https://i.imgur.com/l1Ptr7z.png)
 
@@ -105,7 +106,7 @@ Besides, users are able to input text for a new post and analyse the ESG results
 ***SustainaMeter***'s [GitHub repository](https://github.com/holistic-insights/Turn-Language-into-Action-2022) contains all the code built to support the app and, simultaneously, host the app integrated with Streamlit, that mainly uses the following scripts (in the root folder):
 - **Home&#46;py** has all streamlit code, used to generate the visualizations;
 - **ExpertaiAPI&#46;py** includes the class for handling Expert&#46;ai's API requests;
-- **LinkedinAPI&#46;py** processes all scraping done from LinkedIn;
+- **linkedin-api folder** has the scripts for all scraping done from LinkedIn;
 
 Support scripts and datasets are organized in separate folders:
 - **Data Scraping**, which includes the [linkedin-api](https://linkedin-api.readthedocs.io/en/latest/?badge=latest) package with our own modifications for better performance.
@@ -137,3 +138,4 @@ Finally, using the tools we created (made available on GitHub), one can further 
 - extrapolate these tool to evaluate public figures' profile.
 
 **Let's raise transparency on companies' attitude towards ESG. The sky is the limit!**
+
