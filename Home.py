@@ -11,6 +11,7 @@ from tensorflow.keras.models import load_model
 import tensorflow as tf
 from PIL import Image
 import requests
+from plotly.subplots import make_subplots
 
 
 categories = ['Environment', 'Social', 'Governance']
@@ -110,6 +111,32 @@ def company_analysis(data):
     avg_comments = data['numComments'].mean()
 
     return num_posts, num_esg_neg, num_esg_pos, avg_likes, avg_comments, cat_counts_df, cat_scores_df, subcat_counts_df, subcat_scores_df
+
+def comments_analysis(data_x):
+
+    #top 5 based on ESG total score and  highest total sentiment
+    data_x['ESG total score'] = data_x[categories].sum(axis=1)
+
+    total_sentiment = []
+    mean_sentiment = []
+
+    total_sentiment = data_x.groupby(by='post_urn')['sentiment'].sum()
+    mean_sentiment = data_x.groupby(by='post_urn')['sentiment'].mean()
+
+    frame = {'Total sentiment score': total_sentiment, 'Mean sentiment score': mean_sentiment}
+    df_sentiment = pd.DataFrame(frame)
+
+    data_x = data_x.merge(df_sentiment, on='post_urn', how='left')
+
+    top_ESG_data_x = data_x.sort_values('ESG total score',ascending=False).drop_duplicates('post_urn')[0:4]
+    top_total_sentiment_data_x = data_x.sort_values('Total sentiment score',ascending=False).drop_duplicates('post_urn')[0:4]
+    top_mean_sentiment_data_x = data_x.sort_values('Mean sentiment score',ascending=False).drop_duplicates('post_urn')[0:4]
+
+    data_x_sorted_by_ESG = data_x.sort_values('ESG total score',ascending=False).drop_duplicates('post_urn')
+    data_x_sorted_by_total_sentiment = data_x.sort_values('Total sentiment score',ascending=False).drop_duplicates('post_urn')
+    data_x_sorted_by_mean_sentiment = data_x.sort_values('Mean sentiment score',ascending=False).drop_duplicates('post_urn')
+
+    return data_x, top_ESG_data_x
 
 st.title("SustainaMeter")
 st.write("Raising transparency on companies' attitude towards ESG")
@@ -240,7 +267,7 @@ with tab1:
             fig = px.pie(values=sizes, names=labels, color=sizes, color_discrete_sequence=['#00CC96', '#EF553B'])
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h4>Comments sentiment</h4>', unsafe_allow_html=True)
+            st.markdown(f'<h4>Comments sentiment analysis</h4>', unsafe_allow_html=True)
 
             data_wcomm = pd.read_csv('ESG Models/Data/comments_sentiment.csv')
             data_esg_final = pd.read_csv('ESG Models/Data/posts_esg_25_10.csv')
@@ -252,34 +279,28 @@ with tab1:
 
             data_x = final_df.loc[final_df['company_x'] == option].copy()
 
-            #top 5 based on ESG total score and  highest total sentiment
-            data_x['ESG total score'] = data_x[categories].sum(axis=1)
-
-            total_sentiment = []
-            mean_sentiment = []
-
-            total_sentiment = data_x.groupby(by='post_urn')['sentiment'].sum()
-            mean_sentiment = data_x.groupby(by='post_urn')['sentiment'].mean()
-
-            frame = {'Total sentiment score': total_sentiment, 'Mean sentiment score': mean_sentiment}
-            df_sentiment = pd.DataFrame(frame)
-
-            data_x = data_x.merge(df_sentiment, on='post_urn', how='left')
-
-            top_ESG_data_x = data_x.sort_values('ESG total score',ascending=False).drop_duplicates('post_urn')[0:4]
-            top_total_sentiment_data_x = data_x.sort_values('Total sentiment score',ascending=False).drop_duplicates('post_urn')[0:4]
-            top_mean_sentiment_data_x = data_x.sort_values('Mean sentiment score',ascending=False).drop_duplicates('post_urn')[0:4]
-
-            data_x_sorted_by_ESG = data_x.sort_values('ESG total score',ascending=False).drop_duplicates('post_urn')
-            data_x_sorted_by_total_sentiment = data_x.sort_values('Total sentiment score',ascending=False).drop_duplicates('post_urn')
-            data_x_sorted_by_mean_sentiment = data_x.sort_values('Mean sentiment score',ascending=False).drop_duplicates('post_urn')
+            data_x, top_ESG_data_x = comments_analysis(data_x)
 
             st.markdown(f'<h5>Distribution of comments for all posts by a company</h5>', unsafe_allow_html=True)
-            fig = px.box(data_frame=data_x , x='sentiment')
+
+            if data_x['sentiment'].median() > 0:
+                color = "#00CC96"
+            else:
+                color = "#EF553B"
+
+            fig = go.Figure()
+            fig.add_trace(go.Box(x=data_x['sentiment'], marker_color = color))
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f'<h5>Distribution of comments for top 5 posts with the highest ESG total score</h5>', unsafe_allow_html=True)
-            fig = px.box(data_frame=top_ESG_data_x , x='sentiment')
+
+            if top_ESG_data_x['sentiment'].median() > 0:
+                color = "#00CC96"
+            else:
+                color = "#EF553B"
+
+            fig = go.Figure()
+            fig.add_trace(go.Box(x=top_ESG_data_x['sentiment'], name='Sample A', marker_color = color))
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown("<a href='#esg-meter'>Go to top</a>", unsafe_allow_html=True)
@@ -388,8 +409,6 @@ with tab1:
             fig = px.bar(data_frame=subcat_scores_df.sort_values(by='Category'), x='Category', y='Scores Sum', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
 
-            from plotly.subplots import make_subplots
-
             st.markdown(f'<h5>Posts ESG sentiment</h5>', unsafe_allow_html=True)
 
             labels = ['Positive', 'Negative']
@@ -404,7 +423,7 @@ with tab1:
     
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h4>Comments sentiment</h4>', unsafe_allow_html=True)
+            st.markdown(f'<h4>Comments sentiment analysis</h4>', unsafe_allow_html=True)
 
             data_wcomm = pd.read_csv('ESG Models/Data/comments_sentiment.csv')
             data_esg_final = pd.read_csv('ESG Models/Data/posts_esg_25_10.csv')
@@ -416,34 +435,28 @@ with tab1:
 
             data_x = final_df.loc[final_df['company_x'] == option].copy()
 
-            #top 5 based on ESG total score and  highest total sentiment
-            data_x['ESG total score'] = data_x[categories].sum(axis=1)
-
-            total_sentiment = []
-            mean_sentiment = []
-
-            total_sentiment = data_x.groupby(by='post_urn')['sentiment'].sum()
-            mean_sentiment = data_x.groupby(by='post_urn')['sentiment'].mean()
-
-            frame = {'Total sentiment score': total_sentiment, 'Mean sentiment score': mean_sentiment}
-            df_sentiment = pd.DataFrame(frame)
-
-            data_x = data_x.merge(df_sentiment, on='post_urn', how='left')
-
-            top_ESG_data_x = data_x.sort_values('ESG total score',ascending=False).drop_duplicates('post_urn')[0:4]
-            top_total_sentiment_data_x = data_x.sort_values('Total sentiment score',ascending=False).drop_duplicates('post_urn')[0:4]
-            top_mean_sentiment_data_x = data_x.sort_values('Mean sentiment score',ascending=False).drop_duplicates('post_urn')[0:4]
-
-            data_x_sorted_by_ESG = data_x.sort_values('ESG total score',ascending=False).drop_duplicates('post_urn')
-            data_x_sorted_by_total_sentiment = data_x.sort_values('Total sentiment score',ascending=False).drop_duplicates('post_urn')
-            data_x_sorted_by_mean_sentiment = data_x.sort_values('Mean sentiment score',ascending=False).drop_duplicates('post_urn')
+            data_x, top_ESG_data_x = comments_analysis(data_x)
 
             st.markdown(f'<h5>Distribution of comments for all posts by a company</h5>', unsafe_allow_html=True)
-            fig = px.box(data_frame=data_x , x='sentiment')
+
+            if data_x['sentiment'].median() > 0:
+                color = "#00CC96"
+            else:
+                color = "#EF553B"
+
+            fig = go.Figure()
+            fig.add_trace(go.Box(x=data_x['sentiment'], marker_color = color))
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f'<h5>Distribution of comments for top 5 posts with the highest ESG total score</h5>', unsafe_allow_html=True)
-            fig = px.box(data_frame=top_ESG_data_x , x='sentiment')
+
+            if top_ESG_data_x['sentiment'].median() > 0:
+                color = "#00CC96"
+            else:
+                color = "#EF553B"
+
+            fig = go.Figure()
+            fig.add_trace(go.Box(x=top_ESG_data_x['sentiment'], name='Sample A', marker_color = color))
             st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
