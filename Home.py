@@ -290,7 +290,7 @@ with tab1:
             fig.add_trace(go.Box(x=data_x['sentiment'], name=option_name, marker_color = color))
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h5>Distrinution of Number of comments for the 5 LinkedIn Posts with highest ESG scores</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of Number of comments for the 5 LinkedIn Posts with highest ESG scores</h5>', unsafe_allow_html=True)
 
             if top_ESG_data_x['sentiment'].median() > 0:
                 color = "#00CC96"
