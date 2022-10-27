@@ -532,7 +532,7 @@ with tab2:
         st.markdown('#')
 
         st.markdown(f'<h5>Sentiment analysis</h5>', unsafe_allow_html=True)
-        st.write('Scores range between -100 (negative sentiment) and 100 (positive sentiment)')
+        st.write('Scores range between -100 (negative sentiment) and 100 (positive sentiment). The typical value for good ESG sentiment score is 5.')
 
         layout = go.Layout(
         margin=go.layout.Margin(
