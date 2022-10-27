@@ -141,11 +141,11 @@ def comments_analysis(data_x):
 st.title("SustainaMeter")
 st.write("Raising transparency on companies' attitude towards ESG")
 
-tab1, tab2 = st.tabs(["Company Scoring", "New Post Scoring"])
+tab1, tab2 = st.tabs(["Company ESG Evaluation", "New Post ESG Evaluation"])
 
 with tab1:
 
-    st.subheader("Company Scoring")
+    st.subheader("Company ESG Evaluation")
 
     all_data = pd.read_csv('ESG Models/Data/posts_esg_final.csv')
     list_of_companies = tuple(all_data['company'].unique().tolist())
@@ -158,14 +158,14 @@ with tab1:
 
     with col1:
 
-        option_name = st.selectbox('Search a company', list_of_companies_rich)
+        option_name = st.selectbox('Choose a Company from our Database', list_of_companies_rich)
 
     with col2:
 
-        num_posts = st.selectbox('Number of posts', ['All', 20, 10, 5])
+        num_posts = st.selectbox('Number of LinkedIn Posts to analyse', ['All', 20, 10, 5])
 
     with col3:
-        choose_top_5 = st.selectbox('Compare with top 5 companies based on', ['Number of posts', 'Number of likes', 'Number of comments'])
+        choose_top_5 = st.selectbox('Compare with companies sorted by', ['Number of Posts (Top 5)', 'Number of Likes(Top 5)', 'Number of Comments(Top 5)'])
 
     submit = st.button("Go!", key=1)
 
@@ -491,7 +491,7 @@ with tab1:
 
 with tab2:
     
-    st.subheader("New Post Scoring")
+    st.subheader("New Post ESG Evaluation")
 
     st.write("Write your post")
     post_text = st.text_area("Write your post", label_visibility='collapsed')
