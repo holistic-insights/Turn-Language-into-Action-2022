@@ -3,7 +3,7 @@
 
 We developed a web application with the purpose of creating ways to improve the world using deep Natural Language Processing and Expert.ai's Natural Language API, as part of [Expert.ai's hackathon](https://expertai-nlapi-092022.devpost.com/).
 
-## Competion Category
+## Competition Category
 ESG (Environmental, Social, Governance)
 
 ## Application Name
@@ -59,8 +59,8 @@ Using Expert.ai's pretrained models to provide weak supervision, we trained a mo
 
 #### ***5. Constructing the Web App***
 By taking advantage of **Streamlit**'s open-source Python library to turn python scripts into shareable web apps, we built a single page app, with two tabs:
-1. *Company Scoring*, where users can review a single company's gerenal post, ESG and sentiment performance, as well as compare it with a selection of companies;
-2. *New Post Scoring*, where users can write a new post, and recieve feedback on its ESG rating, and an average sentiment prediction that the post will recieve from the audience.
+1. *Company Scoring*, where users can review a single company's general post, ESG and sentiment performance, as well as compare it with a selection of companies;
+2. *New Post Scoring*, where users can write a new post, and receive feedback on its ESG rating, and an average sentiment prediction that the post will receive from the audience.
 
 ## 💻 Product
 ### Definition
@@ -84,10 +84,10 @@ The following diagram, exemplifies SustainaMeter's activities:
 ### How does the app work?
 Users can input:
 - **Company name**, from the list of available (pre-scraped companies);
-- **Number of posts** to analyse, selected in order of highest number of likes;
+- **Number of posts** to analyse, selected in order of the highest number of likes;
 - **Comparison group** for comparing the selected company's performance with the top 5 companies sorted by no. of likes, comments, posts or their ESG score
 
-Users, will, then, be able to dive into individual analyis of the company and compare it with the average ratings of the top 5 companies selected.
+Users, will, then, be able to dive into individual analysis of the company and compare it with the average ratings of the top 5 companies selected.
 
 ![Screeshots of the App visualizations](https://i.imgur.com/l1Ptr7z.png)
 
