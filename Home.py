@@ -120,7 +120,7 @@ with tab1:
 
     st.subheader("Company Scoring")
 
-    all_data = pd.read_csv('ESG model building/Data/posts_esg_final.csv')
+    all_data = pd.read_csv('ESG Models/Data/posts_esg_final.csv')
     list_of_companies = tuple(all_data['company'].unique().tolist())
 
     companies_info = pd.read_csv("linkedin-api/data/fortune1000_twitter_linkedin.csv", encoding = "ISO-8859-1")[['linkedin', 'name', 'logo']]
@@ -242,8 +242,8 @@ with tab1:
 
             st.markdown(f'<h4>Comments sentiment</h4>', unsafe_allow_html=True)
 
-            data_wcomm = pd.read_csv('ESG model building/Data/comments_sentiment.csv')
-            data_esg_final = pd.read_csv('ESG model building/Data/posts_esg_25_10.csv')
+            data_wcomm = pd.read_csv('ESG Models/Data/comments_sentiment.csv')
+            data_esg_final = pd.read_csv('ESG Models/Data/posts_esg_25_10.csv')
             data_esg_final = data_esg_final.rename(columns={'urn':'post_urn'})
 
             final_df = data_esg_final.merge(data_wcomm, on='post_urn', how='left')
