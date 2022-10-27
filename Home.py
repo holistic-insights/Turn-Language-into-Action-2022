@@ -572,5 +572,5 @@ with tab2:
             fig = go.Indicator(mode = "gauge+number", value = predicted_comments_sentiment.item(), gauge = {'bar': {'color': color}, 'axis': {'range': [-100, 100], 'visible': False}}, domain = {'x': [0, 1], 'y': [0, 1]}, title = {'text': "Predict Comments Sentiment"})   
             fig = dict(data=[fig], layout=layout)
             st.plotly_chart(fig, use_container_width=True)
-            st.write('Scores range between -100 (negative sentiment) and 100 (positive sentiment)')
+        st.write('Scores range between -100 (negative sentiment) and 100 (positive sentiment)')
    
