@@ -154,7 +154,7 @@ with tab1:
 
     list_of_companies_rich = companies_info[companies_info.linkedin.isin(list_of_companies)].name.values
 
-    col1, col2, col3 = st.columns([2,1,3])
+    col1, col2, col3 = st.columns([2,2,2])
 
     with col1:
 
