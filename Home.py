@@ -260,7 +260,7 @@ with tab2:
 
         x = np.array([post_text])
         
-        loaded_model = load_model('ESG model building\Model LinkedIn Post ESG predictor\model_autokeras', custom_objects=ak.CUSTOM_OBJECTS)
+        loaded_model = load_model('model_autokeras', custom_objects=ak.CUSTOM_OBJECTS)
         y_pred = loaded_model.predict(tf.expand_dims(x, -1))
 
         st.write(y_pred)
