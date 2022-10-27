@@ -123,7 +123,7 @@ with tab1:
     all_data = pd.read_csv('ESG Models/Data/posts_esg_final.csv')
     list_of_companies = tuple(all_data['company'].unique().tolist())
 
-    companies_info = pd.read_csv("linkedin-api/data/fortune1000_twitter_linkedin.csv", encoding = "ISO-8859-1")[['linkedin', 'name', 'logo']]
+    companies_info = pd.read_csv("Data Scrapping/data/fortune1000_twitter_linkedin.csv", encoding = "ISO-8859-1")[['linkedin', 'name', 'logo']]
 
     list_of_companies_rich = companies_info[companies_info.linkedin.isin(list_of_companies)].name.values
 
