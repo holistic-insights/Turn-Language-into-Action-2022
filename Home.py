@@ -290,7 +290,7 @@ with tab1:
             fig.add_trace(go.Box(x=data_x['sentiment'], name=option_name, marker_color = color))
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h5>Distrinution of Number of comments for the 5 LinkedIn Posts with highest ESG scores</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of Number of comments for the 5 LinkedIn Posts with highest ESG scores</h5>', unsafe_allow_html=True)
 
             if top_ESG_data_x['sentiment'].median() > 0:
                 color = "#00CC96"
@@ -492,13 +492,11 @@ with tab2:
     st.subheader("New Post ESG Evaluation")
 
     st.write("Write your post")
-    post_text = st.text_area("Write your post", label_visibility='collapsed',  placeholder="e.g. SustainaMeter's plataform allows you to raise transparency on companies’ attitude towards ESG. The sky is the limit!")
+    post_text = st.text_area("Write your post: ", label_visibility='collapsed', placeholder="e.g. SustainaMeter's platform allows you to raise transparency on companies’ attitude towards ESG. The sky is the limit!")
 
     submit = st.button('Submit', key=2)
 
     if submit:
-
-
         exp = ExpertAPI()
         results_df = exp.esg_detection(pd.DataFrame({'text': [post_text]}))
 
