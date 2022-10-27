@@ -139,13 +139,13 @@ def comments_analysis(data_x):
     return data_x, top_ESG_data_x
 
 st.title("SustainaMeter")
-st.write("Raising transparency on companies' attitude towards ESG")
+st.write("Raising transparency on companies' attitude towards ESG with LinkedIn content analytics")
 
-tab1, tab2 = st.tabs(["Company Scoring", "New Post Scoring"])
+tab1, tab2 = st.tabs(["Company ESG Evaluation", "New Post ESG Evaluation"])
 
 with tab1:
 
-    st.subheader("Company Scoring")
+    st.subheader("Company ESG Evaluation")
 
     all_data = pd.read_csv('ESG Models/Data/posts_esg_final.csv')
     list_of_companies = tuple(all_data['company'].unique().tolist())
@@ -154,18 +154,18 @@ with tab1:
 
     list_of_companies_rich = companies_info[companies_info.linkedin.isin(list_of_companies)].name.values
 
-    col1, col2, col3 = st.columns([2,1,3])
+    col1, col2, col3 = st.columns([2,2,2])
 
     with col1:
 
-        option_name = st.selectbox('Search a company', list_of_companies_rich)
+        option_name = st.selectbox('Choose a Company from our Database', list_of_companies_rich)
 
     with col2:
 
-        num_posts = st.selectbox('Number of posts', ['All', 20, 10, 5])
+        num_posts = st.selectbox('Number of LinkedIn Posts to analyse', ['All', 20, 10, 5])
 
     with col3:
-        choose_top_5 = st.selectbox('Compare with top 5 companies based on', ['Number of posts', 'Number of likes', 'Number of comments'])
+        choose_top_5 = st.selectbox('Compare with companies sorted by', ['No. Posts (Top 5)', 'No. Likes (Top 5)', 'No. Comments (Top 5)'])
 
     submit = st.button("Go!", key=1)
 
@@ -242,26 +242,26 @@ with tab1:
 
             st.markdown(f'<h4>ESG analysis</h4>', unsafe_allow_html=True)
 
-            st.markdown(f'<h5>ESG categories counts</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of ESG Categories Ocurrences in LinkedIn Posts</h5>', unsafe_allow_html=True)
             fig = px.bar(data_frame=cat_counts_df.sort_values(by='Category'), x='Category', y='Counts', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h5>ESG categories scores</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Total ESG Score for each Category in LinkedIn Posts</h5>', unsafe_allow_html=True)
             fig = px.bar(data_frame=cat_scores_df.sort_values(by='Category'), x='Category', y='Scores Sum', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h5>ESG subcategories counts</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of ESG Sub-Categories Ocurrences in LikedIn Posts</h5>', unsafe_allow_html=True)
             fig = px.bar(data_frame=subcat_counts_df.sort_values(by='Category'), x='Category', y='Counts', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
         
-            st.markdown(f'<h5>ESG subcategories scores</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Total ESG Score for each Category in LinkedIn Posts</h5>', unsafe_allow_html=True)
             fig = px.bar(data_frame=subcat_scores_df.sort_values(by='Category'), x='Category', y='Scores Sum', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
             
             labels = ['Positive', 'Negative']
             sizes = [num_esg_pos, num_esg_neg]
             
-            st.markdown(f'<h5>Posts ESG sentiment</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Overall ESG Sentiment of LinkedIn Posts</h5>', unsafe_allow_html=True)
             fig = px.pie(values=sizes, names=labels, color=sizes, color_discrete_sequence=['#00CC96', '#EF553B'])
             st.plotly_chart(fig, use_container_width=True)
 
@@ -279,7 +279,7 @@ with tab1:
 
             data_x, top_ESG_data_x = comments_analysis(data_x)
 
-            st.markdown(f'<h5>Distribution of comments for all posts</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of Number of comments for each LinkedIn Post</h5>', unsafe_allow_html=True)
 
             if data_x['sentiment'].median() > 0:
                 color = "#00CC96"
@@ -290,7 +290,7 @@ with tab1:
             fig.add_trace(go.Box(x=data_x['sentiment'], name=option_name, marker_color = color))
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h5>Distribution of comments for top 5 posts with the highest ESG total score</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of Number of comments for the 5 LinkedIn Posts with hight ESG scores</h5>', unsafe_allow_html=True)
 
             if top_ESG_data_x['sentiment'].median() > 0:
                 color = "#00CC96"
@@ -301,12 +301,10 @@ with tab1:
             fig.add_trace(go.Box(x=top_ESG_data_x['sentiment'], name=option_name, marker_color = color))
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown("<a href='#esg-meter'>Go to top</a>", unsafe_allow_html=True)
-
         with tab12:
 
 
-            if choose_top_5 == 'Number of likes':
+            if choose_top_5 == 'Number of Likes (Top 5)':
 
                 top = all_data[['company', 'numLikes']].groupby('company').mean().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
                 top_companies = top['company'].tolist()
@@ -318,7 +316,7 @@ with tab1:
 
                 data = data.sort_values(by='numLikes', ascending=False).iloc[:num_posts].reset_index()
 
-            elif choose_top_5 == 'Number of comments':
+            elif choose_top_5 == 'Number of Comments (Top 5)':
 
                 top = all_data[['company', 'numComments']].groupby('company').mean().reset_index().sort_values(by='numComments', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
                 top_companies = top['company'].tolist()
@@ -330,7 +328,7 @@ with tab1:
 
                 data = data.sort_values(by='numLikes', ascending=False).iloc[:num_posts].reset_index()
 
-            elif choose_top_5 == 'Number of posts':
+            elif choose_top_5 == 'Number of Posts (Top 5)':
 
                 top = all_data[['company', 'numLikes']].groupby('company').count().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
                 top_companies = top['company'].tolist()
@@ -390,31 +388,44 @@ with tab1:
                 st.plotly_chart(fig, use_container_width=True)
 
             cat_counts_df['Source'] = option_name
-            cat_counts_df['Source'] ='Top 5'
-
+            cat_counts_df_top5['Source'] ='Top 5'
             cat_counts_df_top5['Counts'] = cat_counts_df_top5['Counts'].apply(lambda x: x/5)
-
             cat_counts_df_all = pd.concat([cat_counts_df, cat_counts_df_top5], ignore_index=True)
+
+            cat_scores_df['Source'] = option_name
+            cat_scores_df_top5['Source'] ='Top 5'
+            cat_scores_df_top5['Counts'] = cat_scores_df_top5['Scores Sum'].apply(lambda x: x/5)
+            cat_scores_df_all = pd.concat([cat_scores_df, cat_scores_df_top5], ignore_index=True)
+
+            subcat_counts_df['Source'] = option_name
+            subcat_counts_df_top5['Source'] ='Top 5'
+            subcat_counts_df_top5['Counts'] = subcat_counts_df_top5['Counts'].apply(lambda x: x/5)
+            subcat_counts_df_all = pd.concat([subcat_counts_df, subcat_counts_df_top5], ignore_index=True)
+
+            subcat_scores_df['Source'] = option_name
+            subcat_scores_df_top5['Source'] ='Top 5'
+            subcat_scores_df_top5['Counts'] = subcat_scores_df_top5['Scores Sum'].apply(lambda x: x/5)
+            subcat_scores_df_all = pd.concat([subcat_scores_df, subcat_scores_df_top5], ignore_index=True)
 
             st.markdown(f'<h4>ESG analysis</h4>', unsafe_allow_html=True)
 
-            st.markdown(f'<h5>ESG categories counts</h5>', unsafe_allow_html=True)
-            fig = px.bar(data_frame=cat_counts_df_all.sort_values(by='Category'), x='Category', y='Counts', pattern_shape='Source', text='Source', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            st.markdown(f'<h5>Distribution of ESG Categories Ocurrences in LinkedIn Posts</h5>', unsafe_allow_html=True)
+            fig = px.bar(data_frame=cat_counts_df_all.sort_values(by='Category'), x='Category', y='Counts', pattern_shape='Source', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h5>ESG categories scores</h5>', unsafe_allow_html=True)
-            fig = px.bar(data_frame=cat_scores_df.sort_values(by='Category'), x='Category', y='Scores Sum', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            st.markdown(f'<h5>Total ESG Score for each Category in LinkedIn Posts</h5>', unsafe_allow_html=True)
+            fig = px.bar(data_frame=cat_scores_df_all.sort_values(by='Category'), x='Category', y='Scores Sum', pattern_shape='Source', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h5>ESG subcategories counts</h5>', unsafe_allow_html=True)
-            fig = px.bar(data_frame=subcat_counts_df.sort_values(by='Category'), x='Category', y='Counts', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            st.markdown(f'<h5>Distribution of ESG Sub-Categories Ocurrences in LikedIn Posts</h5>', unsafe_allow_html=True)
+            fig = px.bar(data_frame=subcat_counts_df_all.sort_values(by='Category'), x='Category', y='Counts', pattern_shape='Source', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
         
-            st.markdown(f'<h5>ESG subcategories scores</h5>', unsafe_allow_html=True)
-            fig = px.bar(data_frame=subcat_scores_df.sort_values(by='Category'), x='Category', y='Scores Sum', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            st.markdown(f'<h5>Total ESG Score for each Category in LinkedIn Posts</h5>', unsafe_allow_html=True)
+            fig = px.bar(data_frame=subcat_scores_df_all.sort_values(by='Category'), x='Category', y='Scores Sum', pattern_shape='Source', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h5>Posts ESG sentiment</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Overall ESG Sentiment of LinkedIn Posts</h5>', unsafe_allow_html=True)
 
             labels = ['Positive', 'Negative']
 
@@ -442,7 +453,7 @@ with tab1:
 
             data_x_top5, top_ESG_data_x_top5 = comments_analysis(data_x_top5)
 
-            st.markdown(f'<h5>Distribution of comments for all posts </h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of Number of comments for each LinkedIn Post </h5>', unsafe_allow_html=True)
 
             if data_x['sentiment'].median() > 0:
                 color = "#00CC96"
@@ -450,16 +461,16 @@ with tab1:
                 color = "#EF553B"
 
             if data_x_top5['sentiment'].median() > 0:
-                color_top5 = "#00CC96"
+                color_top5 = "#7fe5ca"
             else:
-                color_top5 = "#EF553B"
+                color_top5 = "#f7aa9d"
 
             fig = go.Figure()
             fig.add_trace(go.Box(x=data_x['sentiment'], name=option_name, marker_color = color, showlegend=False))
-            fig.add_trace(go.Box(x=data_x_top5['sentiment'], name='Top 5', marker_color = color_top5, showlegend=False))
+            fig.add_trace(go.Box(x=data_x_top5['sentiment'], name='Top 5', marker_color = color_top5, marker_symbol='x', showlegend=False))
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h5>Distribution of comments for top 5 posts with the highest ESG total score</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of Number of comments for the 5 LinkedIn Posts with hight ESG scores</h5>', unsafe_allow_html=True)
 
             if top_ESG_data_x['sentiment'].median() > 0:
                 color = "#00CC96"
@@ -467,17 +478,19 @@ with tab1:
                 color = "#EF553B"
 
             if top_ESG_data_x_top5['sentiment'].median() > 0:
-                color_top5 = "#00CC96"
+                color_top5 = "#7fe5ca"
             else:
-                color_top5 = "#EF553B"
+                color_top5 = "#f7aa9d"
 
             fig = go.Figure()
             fig.add_trace(go.Box(x=top_ESG_data_x['sentiment'], name=option_name, marker_color = color, showlegend=False))
-            fig.add_trace(go.Box(x=top_ESG_data_x_top5['sentiment'], name='Top 5', marker_color = color_top5, showlegend=False))
+            fig.add_trace(go.Box(x=top_ESG_data_x_top5['sentiment'], name='Top 5', marker_color = color_top5, marker_symbol='x', showlegend=False))
             st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
     
+    st.subheader("New Post ESG Evaluation")
+
     st.write("Write your post")
     post_text = st.text_area("Write your post", label_visibility='collapsed',  placeholder="e.g. SustainaMeter's plataform allows you to raise transparency on companies’ attitude towards ESG. The sky is the limit!")
 
