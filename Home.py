@@ -127,7 +127,7 @@ with tab1:
 
     list_of_companies_rich = companies_info[companies_info.linkedin.isin(list_of_companies)].name.values
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns([2,1,2])
 
     with col1:
 
@@ -138,11 +138,13 @@ with tab1:
         num_posts = st.selectbox('Number of posts', [5, 10, 20, 'All'])
 
     with col3:
-        choose_top_5 = st.selectbox('Compare with top companies based on', ['Number of likes', 'Number of posts', 'ESG sentiment'])
+        choose_top_5 = st.selectbox('Compare with top companies based on', ['Number of posts', 'Number of likes', 'ESG sentiment'])
 
     submit = st.button("Go!", key=1)
 
     if submit:
+
+        st.write(choose_top_5)
 
         option_logo = "https://" + companies_info.loc[companies_info.name == option_name].logo.values[0]
         logo = Image.open(requests.get(option_logo, stream=True).raw)
