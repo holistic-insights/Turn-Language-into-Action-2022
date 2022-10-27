@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 from expertaiAPI import ExpertAPI
 import seaborn as sns
-import autokeras as ak
-from tensorflow.keras.models import load_model
-import tensorflow as tf
+#import autokeras as ak
+#from tensorflow.keras.models import load_model
+#import tensorflow as tf
 from PIL import Image
 import requests
 
@@ -233,10 +233,10 @@ with tab1:
             fig = px.bar(data_frame=subcat_scores_df.sort_values(by='Category'), x='Category', y='Scores Sum', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
             
-            labels = ['Posts with positive sentiment', 'Posts with negative sentiment']
+            labels = ['Positive', 'Negative']
             sizes = [num_esg_pos, num_esg_neg]
             
-            st.markdown(f'<h5>ESG sentiment</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Posts ESG sentiment</h5>', unsafe_allow_html=True)
             fig = px.pie(values=sizes, names=labels, color=sizes, color_discrete_sequence=['#00CC96', '#EF553B'])
             st.plotly_chart(fig, use_container_width=True)
 
@@ -310,9 +310,20 @@ with tab1:
                     num_posts = len(data)
 
                 data = data.sort_values(by='numLikes', ascending=False).iloc[:num_posts].reset_index()
-                
 
-            num_posts, num_esg_neg, num_esg_pos, avg_likes, avg_comments, cat_counts_df, cat_scores_df, subcat_counts_df, subcat_scores_df = company_analysis(data)
+            elif choose_top_5 == 'Number of posts':
+
+                top = all_data[['company', 'numLikes']].groupby('company').count().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
+                top_companies = top['company'].tolist()
+                top_data = all_data.loc[all_data['company'].isin(top_companies[:2])]
+                data = top_data.copy()
+
+                if num_posts == 'All':
+                    num_posts = len(data)
+
+                data = data.sort_values(by='numLikes', ascending=False).iloc[:num_posts].reset_index()
+            
+            num_posts_top5, num_esg_neg_top5, num_esg_pos_top5, avg_likes_top5, avg_comments_top5, cat_counts_df_top5, cat_scores_df_top5, subcat_counts_df_top5, subcat_scores_df_top5 = company_analysis(data)
 
 
             layout = go.Layout(
@@ -329,9 +340,10 @@ with tab1:
             with col1:
 
                 fig = go.Indicator(
-                    mode = "number",
+                    mode = "number+delta",
                     value = np.round(num_posts),
-                    title = {"text": "Number of posts"},
+                    delta = {'position': "top", 'reference': np.round(num_posts_top5)},
+                    title = {"text": "Number of posts<br><span style='font-size:0.8em;color:gray'>Difference to top 5</span><br>"},
                     domain = {'x': [0, 1], 'y': [0, 1]})
                 fig = dict(data=[fig], layout=layout)
                 st.plotly_chart(fig, use_container_width=True)
@@ -339,9 +351,10 @@ with tab1:
             with col2:
 
                 fig = go.Indicator(
-                    mode = "number",
+                    mode = "number+delta",
                     value = np.round(avg_likes),
-                    title = {"text": "Average likes"},
+                    delta = {'position': "top", 'reference': np.round(avg_likes_top5)},
+                    title = {"text": "Average likes<br><span style='font-size:0.8em;color:gray'>Difference to top 5</span><br>"},
                     domain = {'x': [0, 1], 'y': [0, 1]})
                 fig = dict(data=[fig], layout=layout)
                 st.plotly_chart(fig, use_container_width=True)
@@ -349,9 +362,10 @@ with tab1:
             with col3:
 
                 fig = go.Indicator(
-                    mode = "number",
+                    mode = "number+delta",
                     value = np.round(avg_comments),
-                    title = {"text": "Average comments"},
+                    delta = {'position': "top", 'reference': np.round(avg_likes_top5)},
+                    title = {"text": "Average comments<br><span style='font-size:0.8em;color:gray'>Difference to top 5</span><br>"},
                     domain = {'x': [0, 1], 'y': [0, 1]})
                 fig = dict(data=[fig], layout=layout)
                 st.plotly_chart(fig, use_container_width=True)
@@ -373,18 +387,27 @@ with tab1:
             st.markdown(f'<h5>ESG subcategories scores</h5>', unsafe_allow_html=True)
             fig = px.bar(data_frame=subcat_scores_df.sort_values(by='Category'), x='Category', y='Scores Sum', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
-            
-            labels = ['Posts with positive sentiment', 'Posts with negative sentiment']
-            sizes = [num_esg_pos, num_esg_neg]
-            
-            st.markdown(f'<h5>ESG sentiment</h5>', unsafe_allow_html=True)
-            fig = px.pie(values=sizes, names=labels, color=sizes, color_discrete_sequence=['#00CC96', '#EF553B'])
+
+            from plotly.subplots import make_subplots
+
+            st.markdown(f'<h5>Posts ESG sentiment</h5>', unsafe_allow_html=True)
+
+            labels = ['Positive', 'Negative']
+
+            fig = make_subplots(1, 2, specs=[[{'type':'domain'}, {'type':'domain'}]],
+                                subplot_titles=[option_name, 'Top 5'])
+            fig.add_trace(go.Pie(labels=labels, values=[num_esg_pos, num_esg_neg], scalegroup='one',
+                                name=option_name), 1, 1)
+            fig.add_trace(go.Pie(labels=labels, values=[num_esg_pos_top5, num_esg_neg_top5], scalegroup='one',
+                                name='Top 5 companies'), 1, 2)
+
+    
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f'<h4>Comments sentiment</h4>', unsafe_allow_html=True)
 
-            data_wcomm = pd.read_csv('Data/comments_sentiment.csv')
-            data_esg_final = pd.read_csv('Data/posts_esg_25_10.csv')
+            data_wcomm = pd.read_csv('ESG Models/Data/comments_sentiment.csv')
+            data_esg_final = pd.read_csv('ESG Models/Data/posts_esg_25_10.csv')
             data_esg_final = data_esg_final.rename(columns={'urn':'post_urn'})
 
             final_df = data_esg_final.merge(data_wcomm, on='post_urn', how='left')
