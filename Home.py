@@ -390,7 +390,7 @@ with tab1:
                 st.plotly_chart(fig, use_container_width=True)
 
             cat_counts_df['Source'] = option_name
-            cat_counts_df['Source'] ='Top 5'
+            cat_counts_df_top5['Source'] ='Top 5'
 
             cat_counts_df_top5['Counts'] = cat_counts_df_top5['Counts'].apply(lambda x: x/5)
 
