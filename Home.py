@@ -394,6 +394,8 @@ with tab1:
 
             cat_counts_df_all = pd.concat([cat_counts_df, cat_counts_df_top5], ignore_index=True)
 
+            st.write(cat_counts_df_top5)
+
             st.markdown(f'<h4>ESG analysis</h4>', unsafe_allow_html=True)
 
             st.markdown(f'<h5>ESG categories counts</h5>', unsafe_allow_html=True)
