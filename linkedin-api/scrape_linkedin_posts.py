@@ -8,11 +8,14 @@ from dotenv import load_dotenv
 import warnings
 warnings.filterwarnings("ignore")
 
+
+# trick to convert urn code into timestamp
 def convert_ts(urn):
     unix_ts = int(str(int(bin(int(urn))[2:43], 2))[:-3])
     
     return datetime.utcfromtimestamp(unix_ts).strftime('%Y-%m-%d %H:%M:%S')
 
+# receive json with scrapped data, transform relevant post information into dataframe
 def get_LinkedIn_posts(posts):
     
     cols = ['urn', 'ts', 'company', 'numLikes', 'numComments', 'text']
@@ -60,20 +63,23 @@ def get_LinkedIn_posts(posts):
     return posts_data
 
 
-# Load env
-load_dotenv()
+if __name__ == "__main__":
 
-LINKEDIN_USERNAME = getenv("LINKEDIN_USERNAME")
-LINKEDIN_PASSWORD = getenv("LINKEDIN_PASSWORD")
+    # Load env
+    load_dotenv()
 
-#api = Linkedin(LINKEDIN_USERNAME, LINKEDIN_PASSWORD)
+    LINKEDIN_USERNAME = getenv("LINKEDIN_USERNAME")
+    LINKEDIN_PASSWORD = getenv("LINKEDIN_PASSWORD")
 
-#posts_nr = 100
+    api = Linkedin(LINKEDIN_USERNAME, LINKEDIN_PASSWORD)
 
-#linkedin_accounts = pd.read_csv("data/fortune1000_twitter_linkedin.csv")[['linkedin']]
+    posts_nr = 100
 
-#for company in tqdm(linkedin_accounts.values):
-#    C = company[0]
-#    posts = api.get_company_updates(public_id=C, max_results=posts_nr)
-#    posts_data = get_LinkedIn_posts(posts)
-#    posts_data.to_csv('data/posts2.csv', mode='a', header=False, encoding='utf-8')
+    linkedin_accounts = pd.read_csv("data/fortune1000_twitter_linkedin.csv")[['linkedin']]
+
+    # look for posts from each company in the list
+    for company in tqdm(linkedin_accounts.values):
+        C = company[0]
+        posts = api.get_company_updates(public_id=C, max_results=posts_nr)
+        posts_data = get_LinkedIn_posts(posts)
+        posts_data.to_csv('data/posts.csv', mode='a', header=False, encoding='utf-8')

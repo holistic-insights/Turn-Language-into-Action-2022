@@ -1,9 +1,11 @@
 from scrape_linkedin_posts import *
 
+# receive json with scrapped data, transform relevant comment information into dataframe
 def get_LinkedIn_comments(posts_file, comments_nr):
     
     posts_data = pd.read_csv(posts_file, encoding="utf-8").iloc[811+1615+1095+555:]
 
+    # look for comments in each post
     for post_urn, company in tqdm(zip(posts_data.urn, posts_data.company), total=len(posts_data)):
 
         # Get Comments
@@ -57,12 +59,17 @@ def get_LinkedIn_comments(posts_file, comments_nr):
             new_row.to_csv('data/comments.csv', mode='a', header=False, encoding='utf-8')
 
 
-LINKEDIN_USERNAME = getenv("LINKEDIN_USERNAME")
-LINKEDIN_PASSWORD = getenv("LINKEDIN_PASSWORD")
+if __name__ == "__main__":
 
-api = Linkedin(LINKEDIN_USERNAME, LINKEDIN_PASSWORD)
+    # Load env
+    load_dotenv()
 
-comments_nr = 100
-posts_file = "data/posts2_clean.csv"
+    LINKEDIN_USERNAME = getenv("LINKEDIN_USERNAME")
+    LINKEDIN_PASSWORD = getenv("LINKEDIN_PASSWORD")
 
-get_LinkedIn_comments(posts_file, comments_nr)
+    api = Linkedin(LINKEDIN_USERNAME, LINKEDIN_PASSWORD)
+
+    comments_nr = 100
+    posts_file = "data/posts_clean.csv"
+
+    get_LinkedIn_comments(posts_file, comments_nr)

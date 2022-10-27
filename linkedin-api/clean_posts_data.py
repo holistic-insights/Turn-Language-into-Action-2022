@@ -1,9 +1,11 @@
-import pandas as pd
+if __name__ == "__main__":
 
-data = pd.read_csv("data/posts2.csv")
+    import pandas as pd
 
-data_clean = data.drop_duplicates()
-data_clean = data_clean.loc[~data_clean.company.isnull()]
-data_clean = data_clean.loc[~data_clean.text.isnull()]
+    data = pd.read_csv("data/posts.csv")
 
-data_clean.to_csv("data/posts2_clean.csv")
+    data_clean = data.drop_duplicates()
+    data_clean = data_clean.loc[~data_clean.company.isnull()]
+    data_clean = data_clean.loc[~data_clean.text.isnull()]
+
+    data_clean.to_csv("data/posts_clean.csv")
