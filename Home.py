@@ -412,19 +412,19 @@ with tab1:
             st.markdown(f'<h4>ESG analysis</h4>', unsafe_allow_html=True)
 
             st.markdown(f'<h5>ESG categories counts</h5>', unsafe_allow_html=True)
-            fig = px.bar(data_frame=cat_counts_df_all.sort_values(by='Category'), x='Category', y='Counts', pattern_shape='Source', text='Source', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            fig = px.bar(data_frame=cat_counts_df_all.sort_values(by='Category'), x='Category', y='Counts', pattern_shape='Source', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f'<h5>ESG categories scores</h5>', unsafe_allow_html=True)
-            fig = px.bar(data_frame=cat_scores_df_all.sort_values(by='Category'), x='Category', y='Scores Sum', pattern_shape='Source', text='Source', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            fig = px.bar(data_frame=cat_scores_df_all.sort_values(by='Category'), x='Category', y='Scores Sum', pattern_shape='Source', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f'<h5>ESG subcategories counts</h5>', unsafe_allow_html=True)
-            fig = px.bar(data_frame=subcat_counts_df_all.sort_values(by='Category'), x='Category', y='Counts', pattern_shape='Source', text='Source', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            fig = px.bar(data_frame=subcat_counts_df_all.sort_values(by='Category'), x='Category', y='Counts', pattern_shape='Source', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
         
             st.markdown(f'<h5>ESG subcategories scores</h5>', unsafe_allow_html=True)
-            fig = px.bar(data_frame=subcat_scores_df_all.sort_values(by='Category'), x='Category', y='Scores Sum', pattern_shape='Source', text='Source', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            fig = px.bar(data_frame=subcat_scores_df_all.sort_values(by='Category'), x='Category', y='Scores Sum', pattern_shape='Source', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f'<h5>Posts ESG sentiment</h5>', unsafe_allow_html=True)
