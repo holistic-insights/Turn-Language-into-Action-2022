@@ -155,8 +155,10 @@ with tab1:
         with col2:
             st.markdown(f'<h1 style="color:#ff4b4b, text-align: center">{option_name}</h1>', unsafe_allow_html=True)
 
+        tab11, tab12 = st.tabs(["Overall Analysis", "Comparison with Top 5 Companies"])
+
         # data display
-        with tab1:
+        with tab11:
 
             data = all_data.loc[all_data['company'] == option].copy()
 
@@ -277,7 +279,7 @@ with tab1:
 
             st.markdown("<a href='#esg-meter'>Go to top</a>", unsafe_allow_html=True)
 
-        with tab2:
+        with tab12:
 
             choose_top_5 = st.selectbox('Top 5', ['Number of likes', 'Number of posts', 'ESG sentiment'])
 
