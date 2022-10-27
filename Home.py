@@ -468,7 +468,7 @@ with tab1:
                 color_top5 = "#EF553B"
 
             fig = go.Figure()
-            fig.add_trace(go.Box(x=data_x['sentiment'], name=option_name, marker_color = color, showlegend=False))
+            fig.add_trace(go.Box(x=data_x['sentiment'], name=option_name, marker_color = color, marker_symbol='x', showlegend=False))
             fig.add_trace(go.Box(x=data_x_top5['sentiment'], name='Top 5', marker_color = color_top5, showlegend=False))
             st.plotly_chart(fig, use_container_width=True)
 
