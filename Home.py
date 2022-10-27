@@ -127,7 +127,7 @@ with tab1:
 
     list_of_companies_rich = companies_info[companies_info.linkedin.isin(list_of_companies)].name.values
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
 
@@ -136,6 +136,9 @@ with tab1:
     with col2:
 
         num_posts = st.selectbox('Number of posts', [5, 10, 20, 'All'])
+
+    with col3:
+        choose_top_5 = st.selectbox('Compare with top 5 companies based on', ['Number of likes', 'Number of posts', 'ESG sentiment'])
 
     submit = st.button("Go!", key=1)
 
@@ -281,147 +284,142 @@ with tab1:
 
         with tab12:
 
-            choose_top_5 = st.selectbox('Top 5', ['Number of likes', 'Number of posts', 'ESG sentiment'])
 
-            submit = st.button('Submit', key=3)
+            if choose_top_5 == 'Number of likes':
 
-            if submit:
+                top = all_data[['company', 'numLikes']].groupby('company').mean().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
+                top_companies = top['company'].tolist()
+                top_data = all_data.loc[all_data['company'].isin(top_companies)]
+                data = top_data.copy()
 
-                if choose_top_5 == 'Number of likes':
+                if num_posts == 'All':
+                    num_posts = len(data)
 
-                    top = all_data[['company', 'numLikes']].groupby('company').mean().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
-                    top_companies = top['company'].tolist()
-                    top_data = all_data.loc[all_data['company'].isin(top_companies)]
-                    data = top_data.copy()
+                data = data.sort_values(by='numLikes', ascending=False).iloc[:num_posts].reset_index()
 
-                    if num_posts == 'All':
-                        num_posts = len(data)
+            else:
 
-                    data = data.sort_values(by='numLikes', ascending=False).iloc[:num_posts].reset_index()
+                top = all_data[['company', 'numLikes']].groupby('company').mean().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
+                top_companies = top['company'].tolist()
+                top_data = all_data.loc[all_data['company'].isin(top_companies[:2])]
+                data = top_data.copy()
 
-                else:
+                if num_posts == 'All':
+                    num_posts = len(data)
 
-                    top = all_data[['company', 'numLikes']].groupby('company').mean().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
-                    top_companies = top['company'].tolist()
-                    top_data = all_data.loc[all_data['company'].isin(top_companies[:2])]
-                    data = top_data.copy()
+                data = data.sort_values(by='numLikes', ascending=False).iloc[:num_posts].reset_index()
+                
 
-                    if num_posts == 'All':
-                        num_posts = len(data)
-
-                    data = data.sort_values(by='numLikes', ascending=False).iloc[:num_posts].reset_index()
-                    
-
-                num_posts, num_esg_neg, num_esg_pos, avg_likes, avg_comments, cat_counts_df, cat_scores_df, subcat_counts_df, subcat_scores_df = company_analysis(data)
+            num_posts, num_esg_neg, num_esg_pos, avg_likes, avg_comments, cat_counts_df, cat_scores_df, subcat_counts_df, subcat_scores_df = company_analysis(data)
 
 
-                layout = go.Layout(
-                margin=go.layout.Margin(
-                        l=10, #left margin
-                        r=10, #right margin
-                        b=-100, #bottom margin
-                        t=0, #top margin
-                    )
+            layout = go.Layout(
+            margin=go.layout.Margin(
+                    l=10, #left margin
+                    r=10, #right margin
+                    b=-100, #bottom margin
+                    t=0, #top margin
                 )
+            )
 
-                col1, col2, col3 = st.columns(3)
+            col1, col2, col3 = st.columns(3)
 
-                with col1:
+            with col1:
 
-                    fig = go.Indicator(
-                        mode = "number",
-                        value = np.round(num_posts),
-                        title = {"text": "Number of posts"},
-                        domain = {'x': [0, 1], 'y': [0, 1]})
-                    fig = dict(data=[fig], layout=layout)
-                    st.plotly_chart(fig, use_container_width=True)
-
-                with col2:
-
-                    fig = go.Indicator(
-                        mode = "number",
-                        value = np.round(avg_likes),
-                        title = {"text": "Average likes"},
-                        domain = {'x': [0, 1], 'y': [0, 1]})
-                    fig = dict(data=[fig], layout=layout)
-                    st.plotly_chart(fig, use_container_width=True)
-
-                with col3:
-
-                    fig = go.Indicator(
-                        mode = "number",
-                        value = np.round(avg_comments),
-                        title = {"text": "Average comments"},
-                        domain = {'x': [0, 1], 'y': [0, 1]})
-                    fig = dict(data=[fig], layout=layout)
-                    st.plotly_chart(fig, use_container_width=True)
-
-                st.markdown(f'<h4>ESG analysis</h4>', unsafe_allow_html=True)
-
-                st.markdown(f'<h5>ESG categories counts</h5>', unsafe_allow_html=True)
-                fig = px.bar(data_frame=cat_counts_df.sort_values(by='Category'), x='Category', y='Counts', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+                fig = go.Indicator(
+                    mode = "number",
+                    value = np.round(num_posts),
+                    title = {"text": "Number of posts"},
+                    domain = {'x': [0, 1], 'y': [0, 1]})
+                fig = dict(data=[fig], layout=layout)
                 st.plotly_chart(fig, use_container_width=True)
 
-                st.markdown(f'<h5>ESG categories scores</h5>', unsafe_allow_html=True)
-                fig = px.bar(data_frame=cat_scores_df.sort_values(by='Category'), x='Category', y='Scores Sum', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            with col2:
+
+                fig = go.Indicator(
+                    mode = "number",
+                    value = np.round(avg_likes),
+                    title = {"text": "Average likes"},
+                    domain = {'x': [0, 1], 'y': [0, 1]})
+                fig = dict(data=[fig], layout=layout)
                 st.plotly_chart(fig, use_container_width=True)
 
-                st.markdown(f'<h5>ESG subcategories counts</h5>', unsafe_allow_html=True)
-                fig = px.bar(data_frame=subcat_counts_df.sort_values(by='Category'), x='Category', y='Counts', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            with col3:
+
+                fig = go.Indicator(
+                    mode = "number",
+                    value = np.round(avg_comments),
+                    title = {"text": "Average comments"},
+                    domain = {'x': [0, 1], 'y': [0, 1]})
+                fig = dict(data=[fig], layout=layout)
                 st.plotly_chart(fig, use_container_width=True)
+
+            st.markdown(f'<h4>ESG analysis</h4>', unsafe_allow_html=True)
+
+            st.markdown(f'<h5>ESG categories counts</h5>', unsafe_allow_html=True)
+            fig = px.bar(data_frame=cat_counts_df.sort_values(by='Category'), x='Category', y='Counts', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            st.plotly_chart(fig, use_container_width=True)
+
+            st.markdown(f'<h5>ESG categories scores</h5>', unsafe_allow_html=True)
+            fig = px.bar(data_frame=cat_scores_df.sort_values(by='Category'), x='Category', y='Scores Sum', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            st.plotly_chart(fig, use_container_width=True)
+
+            st.markdown(f'<h5>ESG subcategories counts</h5>', unsafe_allow_html=True)
+            fig = px.bar(data_frame=subcat_counts_df.sort_values(by='Category'), x='Category', y='Counts', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            st.plotly_chart(fig, use_container_width=True)
+        
+            st.markdown(f'<h5>ESG subcategories scores</h5>', unsafe_allow_html=True)
+            fig = px.bar(data_frame=subcat_scores_df.sort_values(by='Category'), x='Category', y='Scores Sum', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+            st.plotly_chart(fig, use_container_width=True)
             
-                st.markdown(f'<h5>ESG subcategories scores</h5>', unsafe_allow_html=True)
-                fig = px.bar(data_frame=subcat_scores_df.sort_values(by='Category'), x='Category', y='Scores Sum', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
-                st.plotly_chart(fig, use_container_width=True)
-                
-                labels = ['Posts with positive sentiment', 'Posts with negative sentiment']
-                sizes = [num_esg_pos, num_esg_neg]
-                
-                st.markdown(f'<h5>ESG sentiment</h5>', unsafe_allow_html=True)
-                fig = px.pie(values=sizes, names=labels, color=sizes, color_discrete_sequence=['#00CC96', '#EF553B'])
-                st.plotly_chart(fig, use_container_width=True)
+            labels = ['Posts with positive sentiment', 'Posts with negative sentiment']
+            sizes = [num_esg_pos, num_esg_neg]
+            
+            st.markdown(f'<h5>ESG sentiment</h5>', unsafe_allow_html=True)
+            fig = px.pie(values=sizes, names=labels, color=sizes, color_discrete_sequence=['#00CC96', '#EF553B'])
+            st.plotly_chart(fig, use_container_width=True)
 
-                st.markdown(f'<h4>Comments sentiment</h4>', unsafe_allow_html=True)
+            st.markdown(f'<h4>Comments sentiment</h4>', unsafe_allow_html=True)
 
-                data_wcomm = pd.read_csv('Data/comments_sentiment.csv')
-                data_esg_final = pd.read_csv('Data/posts_esg_25_10.csv')
-                data_esg_final = data_esg_final.rename(columns={'urn':'post_urn'})
+            data_wcomm = pd.read_csv('Data/comments_sentiment.csv')
+            data_esg_final = pd.read_csv('Data/posts_esg_25_10.csv')
+            data_esg_final = data_esg_final.rename(columns={'urn':'post_urn'})
 
-                final_df = data_esg_final.merge(data_wcomm, on='post_urn', how='left')
-                final_df = final_df.drop_duplicates()
-                final_df = final_df.sort_values('sentiment',ascending=False)
+            final_df = data_esg_final.merge(data_wcomm, on='post_urn', how='left')
+            final_df = final_df.drop_duplicates()
+            final_df = final_df.sort_values('sentiment',ascending=False)
 
-                data_x = final_df.loc[final_df['company_x'] == option].copy()
+            data_x = final_df.loc[final_df['company_x'] == option].copy()
 
-                #top 5 based on ESG total score and  highest total sentiment
-                data_x['ESG total score'] = data_x[categories].sum(axis=1)
+            #top 5 based on ESG total score and  highest total sentiment
+            data_x['ESG total score'] = data_x[categories].sum(axis=1)
 
-                total_sentiment = []
-                mean_sentiment = []
+            total_sentiment = []
+            mean_sentiment = []
 
-                total_sentiment = data_x.groupby(by='post_urn')['sentiment'].sum()
-                mean_sentiment = data_x.groupby(by='post_urn')['sentiment'].mean()
+            total_sentiment = data_x.groupby(by='post_urn')['sentiment'].sum()
+            mean_sentiment = data_x.groupby(by='post_urn')['sentiment'].mean()
 
-                frame = {'Total sentiment score': total_sentiment, 'Mean sentiment score': mean_sentiment}
-                df_sentiment = pd.DataFrame(frame)
+            frame = {'Total sentiment score': total_sentiment, 'Mean sentiment score': mean_sentiment}
+            df_sentiment = pd.DataFrame(frame)
 
-                data_x = data_x.merge(df_sentiment, on='post_urn', how='left')
+            data_x = data_x.merge(df_sentiment, on='post_urn', how='left')
 
-                top_ESG_data_x = data_x.sort_values('ESG total score',ascending=False).drop_duplicates('post_urn')[0:4]
-                top_total_sentiment_data_x = data_x.sort_values('Total sentiment score',ascending=False).drop_duplicates('post_urn')[0:4]
-                top_mean_sentiment_data_x = data_x.sort_values('Mean sentiment score',ascending=False).drop_duplicates('post_urn')[0:4]
+            top_ESG_data_x = data_x.sort_values('ESG total score',ascending=False).drop_duplicates('post_urn')[0:4]
+            top_total_sentiment_data_x = data_x.sort_values('Total sentiment score',ascending=False).drop_duplicates('post_urn')[0:4]
+            top_mean_sentiment_data_x = data_x.sort_values('Mean sentiment score',ascending=False).drop_duplicates('post_urn')[0:4]
 
-                data_x_sorted_by_ESG = data_x.sort_values('ESG total score',ascending=False).drop_duplicates('post_urn')
-                data_x_sorted_by_total_sentiment = data_x.sort_values('Total sentiment score',ascending=False).drop_duplicates('post_urn')
-                data_x_sorted_by_mean_sentiment = data_x.sort_values('Mean sentiment score',ascending=False).drop_duplicates('post_urn')
+            data_x_sorted_by_ESG = data_x.sort_values('ESG total score',ascending=False).drop_duplicates('post_urn')
+            data_x_sorted_by_total_sentiment = data_x.sort_values('Total sentiment score',ascending=False).drop_duplicates('post_urn')
+            data_x_sorted_by_mean_sentiment = data_x.sort_values('Mean sentiment score',ascending=False).drop_duplicates('post_urn')
 
-                st.markdown(f'<h5>Distribution of comments for all posts by a company</h5>', unsafe_allow_html=True)
-                fig = px.box(data_frame=data_x , x='sentiment')
-                st.plotly_chart(fig, use_container_width=True)
+            st.markdown(f'<h5>Distribution of comments for all posts by a company</h5>', unsafe_allow_html=True)
+            fig = px.box(data_frame=data_x , x='sentiment')
+            st.plotly_chart(fig, use_container_width=True)
 
-                st.markdown(f'<h5>Distribution of comments for top 5 posts with the highest ESG total score</h5>', unsafe_allow_html=True)
-                fig = px.box(data_frame=top_ESG_data_x , x='sentiment')
-                st.plotly_chart(fig, use_container_width=True)
+            st.markdown(f'<h5>Distribution of comments for top 5 posts with the highest ESG total score</h5>', unsafe_allow_html=True)
+            fig = px.box(data_frame=top_ESG_data_x , x='sentiment')
+            st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
     
