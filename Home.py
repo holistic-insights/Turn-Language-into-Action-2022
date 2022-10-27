@@ -111,7 +111,7 @@ def company_analysis(data):
 
     return num_posts, num_esg_neg, num_esg_pos, avg_likes, avg_comments, cat_counts_df, cat_scores_df, subcat_counts_df, subcat_scores_df
 
-st.title("SustainMeter")
+st.title("SustainaMeter")
 st.write("Raising transparency on companies' attitude towards ESG and compare their position with public perception.")
 
 tab1, tab2 = st.tabs(["Company Scoring", "New Post Scoring"])
