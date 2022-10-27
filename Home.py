@@ -127,7 +127,7 @@ with tab1:
 
     list_of_companies_rich = companies_info[companies_info.linkedin.isin(list_of_companies)].name.values
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns([2,1,3])
 
     with col1:
 
@@ -138,11 +138,13 @@ with tab1:
         num_posts = st.selectbox('Number of posts', [5, 10, 20, 'All'])
 
     with col3:
-        choose_top_5 = st.selectbox('Compare with top 5 companies based on', ['Number of likes', 'Number of posts', 'ESG sentiment'])
+        choose_top_5 = st.selectbox('Compare with top 5 companies based on', ['Number of posts', 'Number of likes', 'Number of comments', 'ESG sentiment'])
 
     submit = st.button("Go!", key=1)
 
     if submit:
+
+        st.write(choose_top_5)
 
         option_logo = "https://" + companies_info.loc[companies_info.name == option_name].logo.values[0]
         logo = Image.open(requests.get(option_logo, stream=True).raw)
@@ -297,9 +299,9 @@ with tab1:
 
                 data = data.sort_values(by='numLikes', ascending=False).iloc[:num_posts].reset_index()
 
-            else:
+            elif choose_top_5 == 'Number of comments':
 
-                top = all_data[['company', 'numLikes']].groupby('company').mean().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
+                top = all_data[['company', 'numComments']].groupby('company').mean().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
                 top_companies = top['company'].tolist()
                 top_data = all_data.loc[all_data['company'].isin(top_companies[:2])]
                 data = top_data.copy()
@@ -317,7 +319,7 @@ with tab1:
             margin=go.layout.Margin(
                     l=10, #left margin
                     r=10, #right margin
-                    b=-100, #bottom margin
+                    b=0, #bottom margin
                     t=0, #top margin
                 )
             )
