@@ -165,7 +165,7 @@ with tab1:
         num_posts = st.selectbox('Number of posts', ['All', 20, 10, 5])
 
     with col3:
-        choose_top_5 = st.selectbox('Compare with top 5 companies based on', ['Number of posts', 'Number of likes', 'Number of comments', 'ESG sentiment'])
+        choose_top_5 = st.selectbox('Compare with top 5 companies based on', ['Number of posts', 'Number of likes', 'Number of comments'])
 
     submit = st.button("Go!", key=1)
 
@@ -389,9 +389,6 @@ with tab1:
                 fig = dict(data=[fig], layout=layout)
                 st.plotly_chart(fig, use_container_width=True)
 
-            cat_counts_df['Category'] = cat_counts_df['Category'].apply(lambda x: f'{x} (Comp. {option_name})')
-            cat_counts_df_top5['Category'] = cat_counts_df_top5['Category'].apply(lambda x: f'{x} (Top 5)')
-
             cat_counts_df['Source'] = option_name
             cat_counts_df['Source'] ='Top 5'
 
@@ -402,7 +399,7 @@ with tab1:
             st.markdown(f'<h4>ESG analysis</h4>', unsafe_allow_html=True)
 
             st.markdown(f'<h5>ESG categories counts</h5>', unsafe_allow_html=True)
-            fig = px.bar(data_frame=cat_counts_df_all.sort_values(by='Category'), x='Category', y='Counts', color='Category', color_discrete_sequence=['#B6E886', '#e2f6cf', '#FF6692', '#ffc2d3', '#19D3F3', '#a3edfa'])
+            fig = px.bar(data_frame=cat_counts_df_all.sort_values(by='Category'), x='Category', y='Counts', pattern_shape='Source', text='Source', color='Category', color_discrete_sequence=['#B6E886', '#e2f6cf', '#FF6692', '#ffc2d3', '#19D3F3', '#a3edfa'])
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f'<h5>ESG categories scores</h5>', unsafe_allow_html=True)
