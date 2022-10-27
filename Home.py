@@ -138,7 +138,7 @@ with tab1:
         num_posts = st.selectbox('Number of posts', [5, 10, 20, 'All'])
 
     with col3:
-        choose_top_5 = st.selectbox('Compare with top companies based on', ['Number of posts', 'Number of likes', 'ESG sentiment'])
+        choose_top_5 = st.selectbox('Compare with top 5 companies based on', ['Number of posts', 'Number of likes', 'ESG sentiment'])
 
     submit = st.button("Go!", key=1)
 
@@ -319,7 +319,7 @@ with tab1:
             margin=go.layout.Margin(
                     l=10, #left margin
                     r=10, #right margin
-                    b=-100, #bottom margin
+                    b=0, #bottom margin
                     t=0, #top margin
                 )
             )
