@@ -478,14 +478,13 @@ with tab1:
 
 with tab2:
     
-    st.subheader("New Post Scoring")
-
     st.write("Write your post")
-    post_text = st.text_area("Write your post", label_visibility='collapsed')
+    post_text = st.text_area("Write your post", label_visibility='collapsed',  placeholder="e.g. SustainaMeter's plataform allows you to raise transparency on companies’ attitude towards ESG. The sky is the limit!")
 
     submit = st.button('Submit', key=2)
 
     if submit:
+
 
         exp = ExpertAPI()
         results_df = exp.esg_detection(pd.DataFrame({'text': [post_text]}))

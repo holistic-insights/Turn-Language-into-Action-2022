@@ -17,7 +17,7 @@ class ExpertAPI(object):
         self.detector = 'esg-sentiment'
 
     def esg_detection(self, posts):
-
+        
         posts.reset_index(drop=True, inplace=True)
 
         for i, text in enumerate(posts.text):
@@ -27,10 +27,10 @@ class ExpertAPI(object):
                     body={'document': {'text': text}},
                     params={'detector': self.detector, 'language': self.language}
                 )
-
+                
                 for category in output.categories:
                     posts.loc[i, category.label] = category.score
-
+                    
             except:
                 print('ESG Detection Failed')
                 continue
