@@ -138,7 +138,7 @@ with tab1:
         num_posts = st.selectbox('Number of posts', [5, 10, 20, 'All'])
 
     with col3:
-        choose_top_5 = st.selectbox('Compare with top 5 companies based on', ['Number of likes', 'Number of posts', 'ESG sentiment'])
+        choose_top_5 = st.selectbox('Compare with top companies based on', ['Number of likes', 'Number of posts', 'ESG sentiment'])
 
     submit = st.button("Go!", key=1)
 
