@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 from expertaiAPI import ExpertAPI
 import seaborn as sns
-#import autokeras as ak
-#from tensorflow.keras.models import load_model
-#import tensorflow as tf
+import autokeras as ak
+from tensorflow.keras.models import load_model
+import tensorflow as tf
 from PIL import Image
 import requests
 
