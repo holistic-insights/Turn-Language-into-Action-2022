@@ -281,7 +281,7 @@ with tab1:
 
             data_x, top_ESG_data_x = comments_analysis(data_x)
 
-            st.markdown(f'<h5>Distribution of comments for all posts by a company</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of comments for all posts</h5>', unsafe_allow_html=True)
 
             if data_x['sentiment'].median() > 0:
                 color = "#00CC96"
@@ -289,7 +289,7 @@ with tab1:
                 color = "#EF553B"
 
             fig = go.Figure()
-            fig.add_trace(go.Box(x=data_x['sentiment'], marker_color = color))
+            fig.add_trace(go.Box(x=data_x['sentiment'], name=option_name, marker_color = color))
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f'<h5>Distribution of comments for top 5 posts with the highest ESG total score</h5>', unsafe_allow_html=True)
@@ -300,7 +300,7 @@ with tab1:
                 color = "#EF553B"
 
             fig = go.Figure()
-            fig.add_trace(go.Box(x=top_ESG_data_x['sentiment'], name='Sample A', marker_color = color))
+            fig.add_trace(go.Box(x=top_ESG_data_x['sentiment'], name=option_name, marker_color = color))
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown("<a href='#esg-meter'>Go to top</a>", unsafe_allow_html=True)
@@ -324,7 +324,7 @@ with tab1:
 
                 top = all_data[['company', 'numComments']].groupby('company').mean().reset_index().sort_values(by='numComments', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
                 top_companies = top['company'].tolist()
-                top_data = all_data.loc[all_data['company'].isin(top_companies[:2])]
+                top_data = all_data.loc[all_data['company'].isin(top_companies)]
                 data = top_data.copy()
 
                 if num_posts == 'All':
@@ -336,7 +336,7 @@ with tab1:
 
                 top = all_data[['company', 'numLikes']].groupby('company').count().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
                 top_companies = top['company'].tolist()
-                top_data = all_data.loc[all_data['company'].isin(top_companies[:2])]
+                top_data = all_data.loc[all_data['company'].isin(top_companies)]
                 data = top_data.copy()
 
                 if num_posts == 'All':
@@ -433,19 +433,25 @@ with tab1:
             final_df = final_df.drop_duplicates()
             final_df = final_df.sort_values('sentiment',ascending=False)
 
-            data_x = final_df.loc[final_df['company_x'] == option].copy()
+            data_x_top5 = final_df.loc[final_df['company_x'].isin(top_companies)].copy()
 
-            data_x, top_ESG_data_x = comments_analysis(data_x)
+            data_x_top5, top_ESG_data_x_top5 = comments_analysis(data_x_top5)
 
-            st.markdown(f'<h5>Distribution of comments for all posts by a company</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of comments for all posts </h5>', unsafe_allow_html=True)
 
             if data_x['sentiment'].median() > 0:
                 color = "#00CC96"
             else:
                 color = "#EF553B"
 
+            if data_x_top5['sentiment'].median() > 0:
+                color_top5 = "#00CC96"
+            else:
+                color_top5 = "#EF553B"
+
             fig = go.Figure()
-            fig.add_trace(go.Box(x=data_x['sentiment'], marker_color = color))
+            fig.add_trace(go.Box(x=data_x['sentiment'], name=option_name, marker_color = color))
+            fig.add_trace(go.Box(x=data_x_top5['sentiment'], name='Top 5', marker_color = color_top5))
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f'<h5>Distribution of comments for top 5 posts with the highest ESG total score</h5>', unsafe_allow_html=True)
@@ -455,8 +461,14 @@ with tab1:
             else:
                 color = "#EF553B"
 
+            if top_ESG_data_x_top5['sentiment'].median() > 0:
+                color_top5 = "#00CC96"
+            else:
+                color_top5 = "#EF553B"
+
             fig = go.Figure()
-            fig.add_trace(go.Box(x=top_ESG_data_x['sentiment'], name='Sample A', marker_color = color))
+            fig.add_trace(go.Box(x=top_ESG_data_x['sentiment'], name=option_name, marker_color = color))
+            fig.add_trace(go.Box(x=top_ESG_data_x_top5['sentiment'], name='Top 5', marker_color = color_top5))
             st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
