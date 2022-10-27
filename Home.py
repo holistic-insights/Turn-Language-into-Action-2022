@@ -389,8 +389,11 @@ with tab1:
                 fig = dict(data=[fig], layout=layout)
                 st.plotly_chart(fig, use_container_width=True)
 
-            cat_counts_df['Category'] = cat_counts_df['Category'].apply(lambda x: x + ' - Company ' + option_name)
-            cat_counts_df_top5['Category'] = cat_counts_df_top5['Category'].apply(lambda x: x + ' - Top 5')
+            cat_counts_df['Category'] = cat_counts_df['Category'].apply(lambda x: f'{x} ({option_name})')
+            cat_counts_df_top5['Category'] = cat_counts_df_top5['Category'].apply(lambda x: f'{x} (Top 5)')
+
+            cat_counts_df['Source'] = option_name
+            cat_counts_df['Source'] ='Top 5'
 
             cat_counts_df_top5['Counts'] = cat_counts_df_top5['Counts'].apply(lambda x: x/5)
 
@@ -399,7 +402,7 @@ with tab1:
             st.markdown(f'<h4>ESG analysis</h4>', unsafe_allow_html=True)
 
             st.markdown(f'<h5>ESG categories counts</h5>', unsafe_allow_html=True)
-            fig = px.bar(data_frame=cat_counts_df_all.sort_values(by='Category'), x='Category', y='Counts', color='Category', color_discrete_sequence=['#B6E886', '#B6E886', '#FF6692', '#FF6692', '#19D3F3', '#19D3F3'])
+            fig = px.bar(data_frame=cat_counts_df_all.sort_values(by='Category'), x='Category', y='Counts', pattern='Source', color='Category', color_discrete_sequence=['#B6E886', '#B6E886', '#FF6692', '#FF6692', '#19D3F3', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f'<h5>ESG categories scores</h5>', unsafe_allow_html=True)
