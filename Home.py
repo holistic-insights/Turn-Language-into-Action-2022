@@ -279,6 +279,10 @@ with tab1:
 
             data_x, top_ESG_data_x = comments_analysis(data_x)
 
+            data_x = data_x.dropna(subset=['Environment', 'Social', 'Governance'], how='all')
+
+            top_ESG_data_x = top_ESG_data_x.dropna(subset=['Environment', 'Social', 'Governance'], how='all')
+
             st.markdown(f'<h5>Distribution of Number of comments for each LinkedIn Post</h5>', unsafe_allow_html=True)
 
             if data_x['sentiment'].median() > 0:
