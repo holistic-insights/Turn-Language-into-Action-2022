@@ -317,7 +317,7 @@ with tab1:
                 margin=go.layout.Margin(
                         l=10, #left margin
                         r=10, #right margin
-                        b=-20, #bottom margin
+                        b=-100, #bottom margin
                         t=0, #top margin
                     )
                 )
