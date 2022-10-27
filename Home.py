@@ -434,36 +434,78 @@ with tab2:
 
     if submit:
 
-        if False == True:
+        exp = ExpertAPI()
+        results_df = exp.esg_detection(pd.DataFrame({'text': [post_text]}))
 
-            exp = ExpertAPI()
-            results_df = exp.esg_detection(pd.DataFrame({'text': [post_text]}))
+        all_cat = categories + subcategories + ['Negative', 'Positive']
 
-            all_cat = categories + subcategories + ['Negative', 'Positive']
+        for cat in [c for c in all_cat if c not in results_df.columns]:
+            results_df[cat] = 0
 
-            for cat in [c for c in all_cat if c not in results_df.columns]:
-                results_df[cat] = 0
+        if results_df['Positive'].item() > 0:
+            post_esg_sentiment = results_df['Positive'].item()
+        else:
+            post_esg_sentiment = -results_df['Negative'].item()
 
-            if results_df['Positive'].item() > 0:
-                post_esg_sentiment = results_df['Positive'].item()
+        cats_df = results_df[categories].transpose().reset_index().rename(columns={'index': 'Category', 0: 'Score'})
+        subcats_df = results_df[subcategories].transpose().reset_index().rename(columns={'index': 'Category', 0: 'Score'})
+
+        fig = px.bar(data_frame=cats_df.sort_values(by='Category'), x='Category', y='Score', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+        st.plotly_chart(fig, use_container_width=True)
+
+        sub_main_match_df = pd.concat([pd.DataFrame({'Category': subcategories_env, 'Main Category': ['Environment']*len(subcategories_env)}), pd.DataFrame({'Category': subcategories_gov_pos_neg, 'Main Category': ['Governance']*len(subcategories_gov_pos_neg)}), pd.DataFrame({'Category': subcategories_soc, 'Main Category': ['Social']*len(subcategories_soc)})], ignore_index=True)
+        subcats_df = subcats_df.merge(sub_main_match_df, on='Category', how='right').replace(np.nan, 0)
+
+        st.markdown(f'<h5>ESG sub categories</h5>', unsafe_allow_html=True)
+        fig = px.bar(data_frame=subcats_df.sort_values(by='Main Category'), x='Category', y='Score', color='Main Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
+        st.plotly_chart(fig, use_container_width=True)
+
+        if post_esg_sentiment > 100:
+            post_esg_sentiment = 100
+        elif post_esg_sentiment < -100:
+            post_esg_sentiment = -100
+
+        st.markdown('#')
+
+        st.markdown(f'<h5>Sentiment analysis</h5>', unsafe_allow_html=True)
+
+        layout = go.Layout(
+        margin=go.layout.Margin(
+                l=10, #left margin
+                r=10, #right margin
+                b=0, #bottom margin
+                t=0, #top margin
+            )
+        )
+
+        col1, col2 = st.columns(2)
+
+        with col1:        
+
+            if post_esg_sentiment > 0:
+                color = "#00CC96"
+            elif post_esg_sentiment == 0:
+                color = "black"
             else:
-                post_esg_sentiment = -results_df['Negative'].item()
+                color = "#EF553B"
 
-            cats_df = results_df[categories].transpose().reset_index().rename(columns={'index': 'Category', 0: 'Score'})
-            subcats_df = results_df[subcategories].transpose().reset_index().rename(columns={'index': 'Category', 0: 'Score'})
-
-            st.markdown(f'<h5>ESG main categories</h5>', unsafe_allow_html=True)
-            st.bar_chart(data=cats_df, x='Category', y='Score')
-
-            st.markdown(f'<h5>ESG sub categories</h5>', unsafe_allow_html=True)
-            st.bar_chart(data=subcats_df, x='Category', y='Score')
-
-            fig = go.Figure(go.Indicator(mode = "gauge+number", value = post_esg_sentiment, domain = {'x': [0, 1], 'y': [0, 1]}, title = {'text': "ESG Sentiment"}))
+            fig = go.Indicator(mode = "gauge+number", value = post_esg_sentiment, gauge = {'bar': {'color': color}, 'axis': {'range': [-100, 100], 'visible': False}}, domain = {'x': [0, 1], 'y': [0, 1]}, title = {'text': "ESG Sentiment"})  
+            fig = dict(data=[fig], layout=layout)
             st.plotly_chart(fig, use_container_width=True)
 
-        x = np.array([post_text])
-        
-        loaded_model = load_model('model_autokeras', custom_objects=ak.CUSTOM_OBJECTS)
-        y_pred = loaded_model.predict(tf.expand_dims(x, -1))
+        with col2:
+    
+            loaded_model = load_model('model_autokeras', custom_objects=ak.CUSTOM_OBJECTS)
+            predicted_comments_sentiment = loaded_model.predict(tf.expand_dims(np.array([post_text]), -1))
 
-        st.write(y_pred)
+            if predicted_comments_sentiment > 0:
+                color = "#00CC96"
+            elif predicted_comments_sentiment == 0:
+                color = "black"
+            else:
+                color = "#EF553B"
+
+            fig = go.Indicator(mode = "gauge+number", value = predicted_comments_sentiment, gauge = {'bar': {'color': color}, 'axis': {'range': [-100, 100], 'visible': False}}, domain = {'x': [0, 1], 'y': [0, 1]}, title = {'text': "Predict Comments Sentiment"})   
+            fig = dict(data=[fig], layout=layout)
+            st.plotly_chart(fig, use_container_width=True)
+   
