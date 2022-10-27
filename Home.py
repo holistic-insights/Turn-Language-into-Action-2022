@@ -515,6 +515,7 @@ with tab2:
         cats_df = results_df[categories].transpose().reset_index().rename(columns={'index': 'Category', 0: 'Score'})
         subcats_df = results_df[subcategories].transpose().reset_index().rename(columns={'index': 'Category', 0: 'Score'})
 
+        st.markdown(f'<h5>ESG categories</h5>', unsafe_allow_html=True)
         fig = px.bar(data_frame=cats_df.sort_values(by='Category'), x='Category', y='Score', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
         st.plotly_chart(fig, use_container_width=True)
 
@@ -573,4 +574,5 @@ with tab2:
             fig = go.Indicator(mode = "gauge+number", value = predicted_comments_sentiment.item(), gauge = {'bar': {'color': color}, 'axis': {'range': [-100, 100], 'visible': False}}, domain = {'x': [0, 1], 'y': [0, 1]}, title = {'text': "Predict Comments Sentiment"})   
             fig = dict(data=[fig], layout=layout)
             st.plotly_chart(fig, use_container_width=True)
+            st.write('Scores range between -100 (negative sentiment) and 100 (positive sentiment)')
    
