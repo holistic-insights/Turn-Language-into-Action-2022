@@ -301,7 +301,7 @@ with tab1:
 
             elif choose_top_5 == 'Number of comments':
 
-                top = all_data[['company', 'numComments']].groupby('company').mean().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
+                top = all_data[['company', 'numComments']].groupby('company').mean().reset_index().sort_values(by='numComments', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
                 top_companies = top['company'].tolist()
                 top_data = all_data.loc[all_data['company'].isin(top_companies[:2])]
                 data = top_data.copy()
