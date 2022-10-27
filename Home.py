@@ -138,7 +138,7 @@ with tab1:
         num_posts = st.selectbox('Number of posts', [5, 10, 20, 'All'])
 
     with col3:
-        choose_top_5 = st.selectbox('Compare with top 5 companies based on', ['Number of posts', 'Number of likes', 'ESG sentiment'])
+        choose_top_5 = st.selectbox('Compare with top 5 companies based on', ['Number of posts', 'Number of likes', 'Number of comments', 'ESG sentiment'])
 
     submit = st.button("Go!", key=1)
 
@@ -299,9 +299,9 @@ with tab1:
 
                 data = data.sort_values(by='numLikes', ascending=False).iloc[:num_posts].reset_index()
 
-            else:
+            elif choose_top_5 == 'Number of comments':
 
-                top = all_data[['company', 'numLikes']].groupby('company').mean().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
+                top = all_data[['company', 'numComments']].groupby('company').mean().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
                 top_companies = top['company'].tolist()
                 top_data = all_data.loc[all_data['company'].isin(top_companies[:2])]
                 data = top_data.copy()
