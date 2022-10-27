@@ -392,6 +392,8 @@ with tab1:
             cat_counts_df['Source'] = option_name
             cat_counts_df_top5['Source'] = 'Top 5'
 
+            cat_counts_df_top5['Counts'] = np.round(cat_counts_df_top5['Counts'] / 5)
+
             cat_counts_df_all = pd.concat([cat_counts_df, cat_counts_df_top5], ignore_index=True)
 
             st.write(cat_counts_df_top5)
