@@ -316,7 +316,7 @@ with tab1:
 
                 data = data.sort_values(by='numLikes', ascending=False).iloc[:num_posts].reset_index()
 
-            elif choose_top_5 == 'No.Comments (Top 5)':
+            elif choose_top_5 == 'No. Comments (Top 5)':
 
                 top = all_data[['company', 'numComments']].groupby('company').mean().reset_index().sort_values(by='numComments', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
                 top_companies = top['company'].tolist()
@@ -328,7 +328,7 @@ with tab1:
 
                 data = data.sort_values(by='numLikes', ascending=False).iloc[:num_posts].reset_index()
 
-            elif choose_top_5 == 'No. of Posts (Top 5)':
+            elif choose_top_5 == 'No. Posts (Top 5)':
 
                 top = all_data[['company', 'numLikes']].groupby('company').count().reset_index().sort_values(by='numLikes', ascending=False).iloc[:5].reset_index().drop(columns=['index'])
                 top_companies = top['company'].tolist()
