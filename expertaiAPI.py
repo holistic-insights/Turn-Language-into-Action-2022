@@ -7,7 +7,7 @@ class ExpertAPI(object):
 
     def __init__(self):
         super().__init__()
-        os.environ['EAI_USERNAME'] = st.secrets['EAI_USERNAME ']
+        os.environ['EAI_USERNAME'] = st.secrets['EAI_USERNAME']
         os.environ['EAI_PASSWORD'] = st.secrets['EAI_PASSWORD']
 
         # Instantiate client to use the Natural Language API
