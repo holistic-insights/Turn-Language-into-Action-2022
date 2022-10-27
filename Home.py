@@ -28,7 +28,90 @@ subcategories_soc = list(dict.fromkeys(subcategories_soc))
 subcategories_gov_pos_neg = ['Business Ethics and Transparency','Board Engagement','Legal Compliance','Product Stewardship']
 
 subcategories = ['Climate Impact', 'Biodiversity and Environmental Footprint', 'Waste and Emission Management', 'Human Capital ', 'Environmental Opportunities ', 'Waste and Emissions Management ', 'Diversity and Inclusion', 'Workplace and Product Safety', 'Environmental Crime', 'Legal Compliance', 'Business Ethics and Transparency', 'Product Stewardship']
-st.title("ESG meter")
+
+
+def company_analysis(data):
+
+    num_posts = len(data)
+
+    num_esg_pos = data['Positive'].value_counts(dropna=True).sum()
+    num_esg_neg = data['Negative'].value_counts(dropna=True).sum()
+
+    cat_counts = dict()
+    cat_scores = dict()
+
+    data['Environmental subcategories'] = 0 
+    data['Social subcategories'] = 0 
+    data['Governance subcategories'] = 0 
+
+
+    score_env=0
+    score_soc=0
+    score_gov=0
+
+    for index, col in enumerate(data):
+        if index < (len(data)-1):
+            if pd.isna(data.at[index, col]):
+                continue 
+            else:
+                if col in subcategories_env:
+                    score_env += data.at[index, col] 
+                elif col in subcategories_soc:
+                    score_soc += data.at[index, col]
+                elif col in subcategories_gov_pos_neg:
+                    score_gov += data.at[index, col]
+                
+                data.at[index, 'Environmental subcategories'] = score_env
+                data.at[index, 'Social subcategories'] = score_soc
+                data.at[index,'Governance subcategories'] = score_gov
+        else: 
+            break
+
+    for col in categories:
+        cat_counts[col] = data[col].value_counts(dropna=True).sum()
+        score = data[col].dropna().mean()
+        if pd.isna(score):
+            score = 0
+        cat_scores[col] = score
+
+    cat_counts_df = pd.DataFrame({'Category': list(cat_counts.keys()), 'Counts': list(cat_counts.values())})
+    cat_scores_df = pd.DataFrame({'Category': list(cat_scores.keys()), 'Scores Sum': list(cat_scores.values())})
+
+    subcat_counts = dict()
+    subcat_scores = dict()
+    subcat_cat = []
+
+    for col in subcategories:
+        subcat_counts[col] = data[col].value_counts(dropna=True).sum()
+        score = data[col].dropna().mean()
+        if pd.isna(score):
+            score = 0
+        subcat_scores[col] = score
+
+    for col in subcat_counts:
+        if col in subcategories_env:
+            subcat_cat.append('Environment')
+        elif col in subcategories_soc:
+            subcat_cat.append('Social')
+        elif col in subcategories_gov_pos_neg:
+            subcat_cat.append('Governance')  
+            
+    cat_individual_scores = dict()
+
+    data['ESG total score'] = data[categories].sum(axis=1)
+
+    subcat_counts_df = pd.DataFrame({'Category': list(subcat_counts.keys()), 'Counts': list(subcat_counts.values()), 'Main category': subcat_cat})
+    subcat_scores_df = pd.DataFrame({'Category': list(subcat_scores.keys()), 'Scores Sum': list(subcat_scores.values()),'Main category': subcat_cat})
+
+    subcat_counts_df = subcat_counts_df.sort_values(by='Main category')
+    subcat_scores_df = subcat_scores_df.sort_values(by='Main category')
+
+    avg_likes = data['numLikes'].mean()
+    avg_comments = data['numComments'].mean()
+
+    return num_posts, num_esg_neg, num_esg_pos, avg_likes, avg_comments, cat_counts_df, cat_scores_df, subcat_counts_df, subcat_scores_df
+
+st.title("SustainMeter")
 st.write("Raising transparency on companies' attitude towards ESG and compare their position with public perception.")
 
 tab1, tab2 = st.tabs(["Company Scoring", "New Post Scoring"])
@@ -82,91 +165,48 @@ with tab1:
             
             data = data.sort_values(by='numLikes', ascending=False).iloc[:num_posts].reset_index()
 
-            num_posts = len(data)
+            num_posts, num_esg_neg, num_esg_pos, avg_likes, avg_comments, cat_counts_df, cat_scores_df, subcat_counts_df, subcat_scores_df = company_analysis(data)
 
-            num_esg_pos = data['Positive'].value_counts(dropna=True).sum()
-            num_esg_neg = data['Negative'].value_counts(dropna=True).sum()
+            layout = go.Layout(
+            margin=go.layout.Margin(
+                    l=10, #left margin
+                    r=10, #right margin
+                    b=0, #bottom margin
+                    t=0, #top margin
+                )
+            )
 
-            cat_counts = dict()
-            cat_scores = dict()
+            col1, col2, col3 = st.columns(3)
 
-            data['Environmental subcategories'] = 0 
-            data['Social subcategories'] = 0 
-            data['Governance subcategories'] = 0 
+            with col1:
 
+                fig = go.Indicator(
+                    mode = "number",
+                    value = np.round(num_posts),
+                    title = {"text": "Number of posts"},
+                    domain = {'x': [0, 1], 'y': [0, 1]})
+                fig = dict(data=[fig], layout=layout)
+                st.plotly_chart(fig, use_container_width=True)
 
-            score_env=0
-            score_soc=0
-            score_gov=0
+            with col2:
 
-            for index, col in enumerate(data):
-                if index < (len(data)-1):
-                    if pd.isna(data.at[index, col]):
-                        continue 
-                    else:
-                        if col in subcategories_env:
-                            score_env += data.at[index, col] 
-                        elif col in subcategories_soc:
-                            score_soc += data.at[index, col]
-                        elif col in subcategories_gov_pos_neg:
-                            score_gov += data.at[index, col]
-                        
-                        data.at[index, 'Environmental subcategories'] = score_env
-                        data.at[index, 'Social subcategories'] = score_soc
-                        data.at[index,'Governance subcategories'] = score_gov
-                else: 
-                    break
+                fig = go.Indicator(
+                    mode = "number",
+                    value = np.round(avg_likes),
+                    title = {"text": "Average likes"},
+                    domain = {'x': [0, 1], 'y': [0, 1]})
+                fig = dict(data=[fig], layout=layout)
+                st.plotly_chart(fig, use_container_width=True)
 
-            for col in categories:
-                cat_counts[col] = data[col].value_counts(dropna=True).sum()
-                score = data[col].dropna().mean()
-                if pd.isna(score):
-                    score = 0
-                cat_scores[col] = score
+            with col3:
 
-            cat_counts_df = pd.DataFrame({'Category': list(cat_counts.keys()), 'Counts': list(cat_counts.values())})
-            cat_scores_df = pd.DataFrame({'Category': list(cat_scores.keys()), 'Scores Sum': list(cat_scores.values())})
-
-            cat_scores_df = pd.DataFrame({'Category': list(cat_scores.keys()), 'Scores Sum': list(cat_scores.values())})
-            cat_scores_df = pd.DataFrame({'Category': list(cat_scores.keys()), 'Scores Sum': list(cat_scores.values())})
-
-
-            subcat_counts = dict()
-            subcat_scores = dict()
-            subcat_cat = []
-
-            for col in subcategories:
-                subcat_counts[col] = data[col].value_counts(dropna=True).sum()
-                score = data[col].dropna().mean()
-                if pd.isna(score):
-                    score = 0
-                subcat_scores[col] = score
-
-            for col in subcat_counts:
-                if col in subcategories_env:
-                    subcat_cat.append('Environment')
-                elif col in subcategories_soc:
-                    subcat_cat.append('Social')
-                elif col in subcategories_gov_pos_neg:
-                    subcat_cat.append('Governance')  
-                    
-            cat_individual_scores = dict()
-
-            data['ESG total score'] = data[categories].sum(axis=1)
-
-            subcat_counts_df = pd.DataFrame({'Category': list(subcat_counts.keys()), 'Counts': list(subcat_counts.values()), 'Main category': subcat_cat})
-            subcat_scores_df = pd.DataFrame({'Category': list(subcat_scores.keys()), 'Scores Sum': list(subcat_scores.values()),'Main category': subcat_cat})
-
-            subcat_counts_df = subcat_counts_df.sort_values(by='Main category')
-            subcat_scores_df = subcat_scores_df.sort_values(by='Main category')
-
-            avg_likes = data['numLikes'].mean()
-            avg_comments = data['numComments'].mean()
-
-            st.markdown(f'<h5>Overall</h5>', unsafe_allow_html=True)
-            st.markdown(f'<p>Number of posts: <b>{num_posts}</b></p>', unsafe_allow_html=True)  
-            st.markdown(f'<p>Average number of likes: <b>{avg_likes:.0f}</b></p>', unsafe_allow_html=True)  
-            st.markdown(f'<p>Average number of comments: <b>{avg_comments:.0f}</b></p>', unsafe_allow_html=True)
+                fig = go.Indicator(
+                    mode = "number",
+                    value = np.round(avg_comments),
+                    title = {"text": "Average comments"},
+                    domain = {'x': [0, 1], 'y': [0, 1]})
+                fig = dict(data=[fig], layout=layout)
+                st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f'<h4>ESG analysis</h4>', unsafe_allow_html=True)
 
@@ -178,11 +218,11 @@ with tab1:
             fig = px.bar(data_frame=cat_scores_df.sort_values(by='Category'), x='Category', y='Scores Sum', color='Category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h5>ESG categories counts</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>ESG subcategories counts</h5>', unsafe_allow_html=True)
             fig = px.bar(data_frame=subcat_counts_df.sort_values(by='Category'), x='Category', y='Counts', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
         
-            st.markdown(f'<h5>ESG categories scores</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>ESG subcategories scores</h5>', unsafe_allow_html=True)
             fig = px.bar(data_frame=subcat_scores_df.sort_values(by='Category'), x='Category', y='Scores Sum', color='Main category', color_discrete_sequence=['#B6E886', '#FF6692', '#19D3F3'])
             st.plotly_chart(fig, use_container_width=True)
             
@@ -195,8 +235,8 @@ with tab1:
 
             st.markdown(f'<h4>Comments sentiment</h4>', unsafe_allow_html=True)
 
-            data_wcomm = pd.read_csv('ESG model building/Data/comments_sentiment.csv')
-            data_esg_final = pd.read_csv('ESG model building/Data/posts_esg_25_10.csv')
+            data_wcomm = pd.read_csv('Data/comments_sentiment.csv')
+            data_esg_final = pd.read_csv('Data/posts_esg_25_10.csv')
             data_esg_final = data_esg_final.rename(columns={'urn':'post_urn'})
 
             final_df = data_esg_final.merge(data_wcomm, on='post_urn', how='left')
