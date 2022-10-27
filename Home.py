@@ -450,8 +450,8 @@ with tab1:
                 color_top5 = "#EF553B"
 
             fig = go.Figure()
-            fig.add_trace(go.Box(x=data_x['sentiment'], name=option_name, marker_color = color))
-            fig.add_trace(go.Box(x=data_x_top5['sentiment'], name='Top 5', marker_color = color_top5))
+            fig.add_trace(go.Box(x=data_x['sentiment'], name=option_name, marker_color = color, showlegend=False))
+            fig.add_trace(go.Box(x=data_x_top5['sentiment'], name='Top 5', marker_color = color_top5, showlegend=False))
             st.plotly_chart(fig, use_container_width=True)
 
             st.markdown(f'<h5>Distribution of comments for top 5 posts with the highest ESG total score</h5>', unsafe_allow_html=True)
@@ -467,8 +467,8 @@ with tab1:
                 color_top5 = "#EF553B"
 
             fig = go.Figure()
-            fig.add_trace(go.Box(x=top_ESG_data_x['sentiment'], name=option_name, marker_color = color))
-            fig.add_trace(go.Box(x=top_ESG_data_x_top5['sentiment'], name='Top 5', marker_color = color_top5))
+            fig.add_trace(go.Box(x=top_ESG_data_x['sentiment'], name=option_name, marker_color = color, showlegend=False))
+            fig.add_trace(go.Box(x=top_ESG_data_x_top5['sentiment'], name='Top 5', marker_color = color_top5, showlegend=False))
             st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
