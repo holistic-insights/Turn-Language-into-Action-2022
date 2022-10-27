@@ -282,7 +282,7 @@ with tab1:
             data_x = data_x.dropna(subset=['Environment', 'Social', 'Governance'], how='all')
             top_ESG_data_x = top_ESG_data_x.dropna(subset=['Environment', 'Social', 'Governance'], how='all')
 
-            st.markdown(f'<h5>Distribution of Number of comments for each LinkedIn Post</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of Comment Sentiment for LinkedIn Posts</h5>', unsafe_allow_html=True)
 
             if data_x['sentiment'].median() > 0:
                 color = "#00CC96"
@@ -293,7 +293,7 @@ with tab1:
             fig.add_trace(go.Box(x=data_x['sentiment'], name=option_name, marker_color = color))
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h5>Distribution of Number of comments for the 5 LinkedIn Posts with highest ESG scores</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of Comment Sentiment for the 5 LinkedIn Posts with highest ESG scores</h5>', unsafe_allow_html=True)
 
             if top_ESG_data_x['sentiment'].median() > 0:
                 color = "#00CC96"
@@ -460,7 +460,7 @@ with tab1:
             top_ESG_data_x_top5 = top_ESG_data_x_top5.dropna(subset=['Environment', 'Social', 'Governance'], how='all')
 
 
-            st.markdown(f'<h5>Distribution of Number of comments for each LinkedIn Post </h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of Comment Sentiment for LinkedIn Posts </h5>', unsafe_allow_html=True)
 
             if data_x['sentiment'].median() > 0:
                 color = "#00CC96"
@@ -477,7 +477,7 @@ with tab1:
             fig.add_trace(go.Box(x=data_x_top5['sentiment'], name='Top 5', marker_color = color_top5, marker_symbol='x', showlegend=False))
             st.plotly_chart(fig, use_container_width=True)
 
-            st.markdown(f'<h5>Distribution of Number of comments for the 5 LinkedIn Posts with hight ESG scores</h5>', unsafe_allow_html=True)
+            st.markdown(f'<h5>Distribution of Comment Sentiment for the 5 LinkedIn Posts with highest ESG scores</h5>', unsafe_allow_html=True)
 
             if top_ESG_data_x['sentiment'].median() > 0:
                 color = "#00CC96"
