@@ -9,6 +9,9 @@ import seaborn as sns
 import autokeras as ak
 from tensorflow.keras.models import load_model
 import tensorflow as tf
+from PIL import Image
+import requests
+
 
 categories = ['Environment', 'Social', 'Governance']
 
@@ -37,25 +40,40 @@ with tab1:
     all_data = pd.read_csv('ESG model building/Data/posts_esg_final.csv')
     list_of_companies = tuple(all_data['company'].unique().tolist())
 
+    companies_info = pd.read_csv("linkedin-api/data/fortune1000_twitter_linkedin.csv", encoding = "ISO-8859-1")[['linkedin', 'name', 'logo']]
+
+    list_of_companies_rich = companies_info[companies_info.linkedin.isin(list_of_companies)].name.values
+
     col1, col2 = st.columns(2)
 
     with col1:
 
-        option = st.selectbox('Search a company', list_of_companies)
+        option_name = st.selectbox('Search a company', list_of_companies_rich)
 
     with col2:
 
         num_posts = st.selectbox('Number of posts', [5, 10, 20, 'All'])
 
-    submit = st.button('Submit', key=1)
+    submit = st.button("Go!", key=1)
 
     if submit:
 
-        st.markdown(f'<h1 style="color:#ff4b4b">{option}</h1>', unsafe_allow_html=True)
+        option_logo = "https://" + companies_info.loc[companies_info.name == option_name].logo.values[0]
+        logo = Image.open(requests.get(option_logo, stream=True).raw)
+        option = companies_info.loc[companies_info.name == option_name].linkedin.values[0]
 
-        tab11, tab21 = st.tabs(["Overall Analysis", "Comparison with top 5 companies"])
+        # blank spaces
+        st.markdown("#")
 
-        with tab11:
+        # logo and company name 
+        col1, mid, col2 = st.columns([3,1.5,20])
+        with col1:
+            st.image(logo, width=100)
+        with col2:
+            st.markdown(f'<h1 style="color:#ff4b4b, text-align: center">{option_name}</h1>', unsafe_allow_html=True)
+
+        # data display
+        with tab1:
 
             data = all_data.loc[all_data['company'] == option].copy()
 
@@ -217,7 +235,9 @@ with tab1:
             fig = px.box(data_frame=top_ESG_data_x , x='sentiment')
             st.plotly_chart(fig, use_container_width=True)
 
-        with tab21:
+            st.markdown("<a href='#esg-meter'>Go to top</a>", unsafe_allow_html=True)
+
+        with tab2:
             pass
 
 with tab2:
