@@ -171,8 +171,10 @@ with tab1:
 
     if submit:
 
-        option_logo = "https://" + companies_info.loc[companies_info.name == option_name].logo.values[0]
-        logo = Image.open(requests.get(option_logo, stream=True).raw)
+        # option_logo = "https://" + companies_info.loc[companies_info.name == option_name].logo.values[0]
+        #logo = Image.open(requests.get(option_logo, stream=True).raw)
+
+        logo = Image.open(f"imgs/{option_name}.jfif")
         option = companies_info.loc[companies_info.name == option_name].linkedin.values[0]
 
         # blank spaces
